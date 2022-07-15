@@ -1,4 +1,4 @@
-module github.com/dreamcacao02183/snum
+module github.com/gokch/snum
 
 go 1.17
 
