@@ -15,8 +15,6 @@ implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
 
 # 헤더 구성
-buf[0]
- 헤더
  - 255 = 정수 자릿수가 96 자리인 양수 ( 1e95 <= x < 1e96 )
  - 254 = 정수 자릿수가 95 자리인 양수 ( 1e94 <= x < 1e95 )
  ..... ( 양의 정수 )
