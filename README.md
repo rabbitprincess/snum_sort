@@ -1,11 +1,10 @@
 # go-snum
-정렬 가능한 string number 인/디코더
-
+golang string number utility
 implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
 =====================================================================
 
-byte encoding 시 가능한 용량 한도
+# byte encoding 시 용량 한도
 1. bt__sorted
 1-1. 양수 : 65 byte (header 1 bt + body 64 bt)
 1-2. 음수 : 66 byte (header 1 bt + body 64 bt + 0xFF 1 bt)
@@ -15,6 +14,7 @@ byte encoding 시 가능한 용량 한도
  2-2. 음수 : 55 byte (header 1 bt + body 54 bt)
 
 
+# 헤더 구성
 buf[0]
  헤더
  - 255 = 정수 자릿수가 96 자리인 양수 ( 1e95 <= x < 1e96 )
