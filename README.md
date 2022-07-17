@@ -4,8 +4,8 @@ implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
 # range limit
 1. bt__sorted
-1-1. 양수 : 65 byte (header 1 bt + body 64 bt)
-1-2. 음수 : 66 byte (header 1 bt + body 64 bt + 0xFF 1 bt)
+ 1-1. 양수 : 65 byte (header 1 bt + body 64 bt)
+ 1-2. 음수 : 66 byte (header 1 bt + body 64 bt + 0xFF 1 bt)
 
 2. bt__unsorted
  2-1. 양수 : 55 byte (header 1 bt + body 54 bt)
