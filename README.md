@@ -2,8 +2,6 @@
 golang string number utility
 implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
-=====================================================================
-
 # byte encoding 시 용량 한도
 1. bt__sorted
 1-1. 양수 : 65 byte (header 1 bt + body 64 bt)
