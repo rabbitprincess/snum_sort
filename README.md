@@ -1,6 +1,6 @@
 # go-snum
-golang string number utility
-implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
+ - golang string number utility
+ - implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
 # range limit
 1. bt__sorted
