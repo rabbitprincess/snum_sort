@@ -1,8 +1,5 @@
 package snum
 
-//------------------------------------------------------------------------------------------//
-// binary - sorted
-
 type T_Encoder struct {
 	Snum
 }
@@ -50,7 +47,7 @@ func (t *T_Encoder) Encode() (bt_ret []byte, err error) {
 				bt_num__4bit[i] = ^bt_num__4bit[i] // 비트 반전
 			}
 
-			// 음수의 경우 무조건 끝에 역정렬 알고리즘을 위한 비교마감(cut) 수치 ( 통상올수있는 값 range 보다 더 큰수 ) 를 넣는다.
+			// 음수일 경우 정렬을 위해 0xFF 추가
 			bt_num__4bit = append(bt_num__4bit, 0xFF)
 		}
 	}
@@ -132,13 +129,13 @@ func (t *T_Encoder) header__decode(_b1_header byte) (is_minus bool, b1_len_stand
 
 func (t *T_Encoder) header__make__len_decimal(_n_len int, _b1_len_starndard byte) (n_len_decimal int) {
 	// 소수 길이 추출
-	n_len_decimal = _n_len - int(_b1_len_starndard) + DEF_b1_header__max_len__decimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	n_len_decimal = _n_len - int(_b1_len_starndard) + DEF_b1_header__max_len__decimal - 1
 	return n_len_decimal
 }
 
 func (t *T_Encoder) header__make__pos_start_dot(_n_len__total int, _n_len__decimal int) (n_pos_start_dot int) {
 	// 소수점 시작 위치 추출
-	n_pos_start_dot = _n_len__total - _n_len__decimal + DEF_b1_header__max_len__decimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	n_pos_start_dot = _n_len__total - _n_len__decimal + DEF_b1_header__max_len__decimal - 1
 	return n_pos_start_dot
 }
 
