@@ -71,7 +71,7 @@ func (t *Encoder) Decode(_num []byte) (err error) {
 	var is_minus bool
 	var b1_len_header byte
 	{
-		is_minus, b1_len_header = t.header__decode(_num[0])
+		is_minus, b1_len_header = t.decodeHeader(_num[0])
 		// _bt_num 이 0 일 경우 처리
 		if len(_num) == 2 && _num[1] == 0 {
 			b1_len_header = byte(DEF_headerLenDecimal)
@@ -103,7 +103,7 @@ func (t *Encoder) Decode(_num []byte) (err error) {
 
 		// n_len__decimal 추출
 		n_len__total := len(s_raw)
-		n_len__decimal = t.header__make__len_decimal(n_len__total, b1_len_header)
+		n_len__decimal = t.makeLenDecimal(n_len__total, b1_len_header)
 	}
 
 	// snum 세팅 ( T_Snum 사용 )
@@ -116,39 +116,39 @@ func (t *Encoder) Decode(_num []byte) (err error) {
 //------------------------------------------------------------------------------------------//
 // util ( header )
 
-func (t *Encoder) header__decode(_b1_header byte) (is_minus bool, b1_len_standard byte) {
-	if _b1_header&DEF_headerBitMaskSign == 0 {
+func (t *Encoder) decodeHeader(_header byte) (isMinus bool, lenStandard byte) {
+	if _header&DEF_headerBitMaskSign == 0 {
 		// 부호(+-) 추출
-		is_minus = true
+		isMinus = true
 		// 음수일 경우 헤더 보수처리
-		_b1_header = ^_b1_header
+		_header = ^_header
 	}
 
 	// 헤더에서 정수길이만 추출
-	b1_len_standard = _b1_header & DEF_headerBitMaskStandardLen
+	lenStandard = _header & DEF_headerBitMaskStandardLen
 
-	return is_minus, b1_len_standard
+	return isMinus, lenStandard
 }
 
-func (t *Encoder) header__make__len_decimal(_n_len int, _b1_len_starndard byte) (n_len_decimal int) {
+func (t *Encoder) makeLenDecimal(_len int, _lenStarndard byte) (lenDecimal int) {
 	// 소수 길이 추출
-	n_len_decimal = _n_len - int(_b1_len_starndard) + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
-	return n_len_decimal
+	lenDecimal = _len - int(_lenStarndard) + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	return lenDecimal
 }
 
-func (t *Encoder) makePosStartDot(_n_len__total int, _n_len__decimal int) (n_pos_start_dot int) {
+func (t *Encoder) makePosStartDot(_lenTotal int, _lenDecimal int) (posStartDot int) {
 	// 소수점 시작 위치 추출
-	n_pos_start_dot = _n_len__total - _n_len__decimal + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
-	return n_pos_start_dot
+	posStartDot = _lenTotal - _lenDecimal + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	return posStartDot
 }
 
-func (t *Encoder) makeHeader(_n_pos_start_dot int, is_minus bool) (b1_header byte) {
+func (t *Encoder) makeHeader(_posStartDot int, _isMinus bool) (header byte) {
 	// 헤더 제작 - 제작시 양수로 가정하고 제작 후 -> 후 처리에서 음수를 반영
-	b1_header = DEF_headerValueSignPlus | byte(_n_pos_start_dot)
+	header = DEF_headerValueSignPlus | byte(_posStartDot)
 
 	// 음수의 경우 비트반전
-	if is_minus == true {
-		b1_header = ^b1_header
+	if _isMinus == true {
+		header = ^header
 	}
-	return b1_header
+	return header
 }
