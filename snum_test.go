@@ -10,8 +10,8 @@ func Test_trim(_t *testing.T) {
 	fn := func(_s_num__input, _s_num__expected string, _n_len_int, _n_len_decimal int) {
 		pt_snum := &Snum{}
 		pt_snum.Init(_n_len_int, _n_len_decimal)
-		pt_snum.Set__str(_s_num__input)
-		pt_snum.Trim_digit()
+		pt_snum.SetStr(_s_num__input)
+		pt_snum.TrimDigit()
 
 		s_num_result := pt_snum.String()
 
@@ -34,15 +34,15 @@ func Test_trim(_t *testing.T) {
 	fn("123456789.987654321", "89.987", 2, 3)
 
 	// default
-	fn("-1"+strings.Repeat("0", DEF_b1_header__max_len__standard-1), "-1"+strings.Repeat("0", DEF_b1_header__max_len__standard-1), 0, 0)
-	fn("-"+strings.Repeat("9", DEF_b1_header__max_len__standard), "-"+strings.Repeat("9", DEF_b1_header__max_len__standard), 0, 0)
-	fn("-0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1", "-0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1", 0, 0)
-	fn("-"+strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal), "-"+strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal), 0, 0)
-	fn(strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal), strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal), 0, 0)
+	fn("-1"+strings.Repeat("0", DEF_headerLenInteger-1), "-1"+strings.Repeat("0", DEF_headerLenInteger-1), 0, 0)
+	fn("-"+strings.Repeat("9", DEF_headerLenInteger), "-"+strings.Repeat("9", DEF_headerLenInteger), 0, 0)
+	fn("-0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "-0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", 0, 0)
+	fn("-"+strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "-"+strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), 0, 0)
+	fn(strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("8", DEF_headerLenDecimal), strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("8", DEF_headerLenDecimal), 0, 0)
 
 	// 초과
-	fn(strings.Repeat("9", DEF_b1_header__max_len__standard-10)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal+10), strings.Repeat("9", DEF_b1_header__max_len__standard-10)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal), 0, 0)
-	fn(strings.Repeat("9", DEF_b1_header__max_len__standard+10)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal-10), strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal-10), 0, 0)
+	fn(strings.Repeat("9", DEF_headerLenInteger-10)+"."+strings.Repeat("8", DEF_headerLenDecimal+10), strings.Repeat("9", DEF_headerLenInteger-10)+"."+strings.Repeat("8", DEF_headerLenDecimal), 0, 0)
+	fn(strings.Repeat("9", DEF_headerLenInteger+10)+"."+strings.Repeat("8", DEF_headerLenDecimal-10), strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("8", DEF_headerLenDecimal-10), 0, 0)
 }
 
 func Test_set_get(_t *testing.T) {
@@ -60,7 +60,7 @@ func Test_set_get(_t *testing.T) {
 		pt_snum := &Snum{}
 		pt_snum.Init(0, 0)
 		{
-			err := pt_snum.Set__str(_s_num__input)
+			err := pt_snum.SetStr(_s_num__input)
 			if err != nil {
 				_t.Errorf("String__set\n%s:%v\n%s:%v\n", "_s_num__input :", _s_num__input, "err", err)
 			}
@@ -126,10 +126,10 @@ func Test_set_get(_t *testing.T) {
 
 		// 자릿수 한도
 		{
-			fn("1"+strings.Repeat("0", DEF_b1_header__max_len__standard-1), "")
-			fn(strings.Repeat("9", DEF_b1_header__max_len__standard), "")
-			fn("0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1", "")
-			fn(strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal), "")
+			fn("1"+strings.Repeat("0", DEF_headerLenInteger-1), "")
+			fn(strings.Repeat("9", DEF_headerLenInteger), "")
+			fn("0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "")
+			fn(strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "")
 		}
 	}
 
@@ -182,11 +182,11 @@ func Test_set_get(_t *testing.T) {
 		{
 			fn("10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", "")
 
-			fn("-1"+strings.Repeat("0", DEF_b1_header__max_len__standard-1), "")
-			fn("-"+strings.Repeat("9", DEF_b1_header__max_len__standard), "")
-			fn("-0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1", "")
-			fn("-"+strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal), "")
-			fn(strings.Repeat("9", DEF_b1_header__max_len__standard+10)+"."+strings.Repeat("8", DEF_b1_header__max_len__decimal), "") // 양수 최대값
+			fn("-1"+strings.Repeat("0", DEF_headerLenInteger-1), "")
+			fn("-"+strings.Repeat("9", DEF_headerLenInteger), "")
+			fn("-0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "")
+			fn("-"+strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "")
+			fn(strings.Repeat("9", DEF_headerLenInteger+10)+"."+strings.Repeat("8", DEF_headerLenDecimal), "") // 양수 최대값
 		}
 	}
 }
@@ -198,12 +198,12 @@ func Test_copy(_t *testing.T) {
 	fn := func(_sn_input string) {
 		pt_ori := &Snum{}
 		pt_ori.Init(0, 0)
-		err := pt_ori.Set__str(_sn_input)
+		err := pt_ori.SetStr(_sn_input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
 		}
-		sn_ori, err := pt_ori.Get__str()
+		sn_ori, err := pt_ori.GetStr()
 		if err != nil {
 			_t.Errorf("string get error | err - %v", err)
 			return
@@ -212,7 +212,7 @@ func Test_copy(_t *testing.T) {
 		pt_copy := &Snum{}
 		pt_copy.Init(0, 0)
 		pt_copy.decimal.Copy(pt_ori.decimal)
-		sn_copy, err := pt_copy.Get__str()
+		sn_copy, err := pt_copy.GetStr()
 		if err != nil {
 			_t.Errorf("string get error | err - %v", err)
 			return
@@ -248,10 +248,10 @@ func Test_copy(_t *testing.T) {
 	fn("-0.001234")
 	fn("-0.0001234")
 
-	fn("-0." + strings.Repeat("0", DEF_b1_header__max_len__decimal-1) + "1")                                                     // 음수 최대값
-	fn("0." + strings.Repeat("0", DEF_b1_header__max_len__decimal-1) + "1")                                                      // 양수 최소값
-	fn("-" + strings.Repeat("9", DEF_b1_header__max_len__standard) + "." + strings.Repeat("9", DEF_b1_header__max_len__decimal)) // 음수 최소값
-	fn(strings.Repeat("9", DEF_b1_header__max_len__standard) + "." + strings.Repeat("9", DEF_b1_header__max_len__decimal))       // 양수 최대값
+	fn("-0." + strings.Repeat("0", DEF_headerLenDecimal-1) + "1")                                         // 음수 최대값
+	fn("0." + strings.Repeat("0", DEF_headerLenDecimal-1) + "1")                                          // 양수 최소값
+	fn("-" + strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 음수 최소값
+	fn(strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal))       // 양수 최대값
 }
 
 func Test_calc(_t *testing.T) {
@@ -273,19 +273,19 @@ func Test_calc(_t *testing.T) {
 		for _, s_calc := range arrs_calc {
 			switch s_calc {
 			case "add":
-				sn_result, err = Add__str(_t_input.sn_input_1, _t_input.sn_input_2)
+				sn_result, err = AddStr(_t_input.sn_input_1, _t_input.sn_input_2)
 				s_op = "+"
 				sn_expect = _t_input.sn_expected__add
 			case "sub":
-				sn_result, err = Sub__str(_t_input.sn_input_1, _t_input.sn_input_2)
+				sn_result, err = SubStr(_t_input.sn_input_1, _t_input.sn_input_2)
 				s_op = "-"
 				sn_expect = _t_input.sn_expected__sub
 			case "mul":
-				sn_result, err = Mul__str(_t_input.sn_input_1, _t_input.sn_input_2)
+				sn_result, err = MulStr(_t_input.sn_input_1, _t_input.sn_input_2)
 				s_op = "*"
 				sn_expect = _t_input.sn_expected__mul
 			case "div":
-				sn_result, err = Div__str(_t_input.sn_input_1, _t_input.sn_input_2)
+				sn_result, err = DivStr(_t_input.sn_input_1, _t_input.sn_input_2)
 				s_op = "/"
 				sn_expect = _t_input.sn_expected__div
 			}
@@ -347,7 +347,7 @@ func Test_abs_neg(_t *testing.T) {
 	}
 
 	fn := func(_t_input T_Input) {
-		s_output, err := Abs__str(_t_input.sn_input)
+		s_output, err := AbsStr(_t_input.sn_input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
@@ -356,7 +356,7 @@ func Test_abs_neg(_t *testing.T) {
 			_t.Errorf("%s abs error | expected : %v, result : %v\n", _t_input.sn_input, _t_input.sn_expected__abs, s_output)
 		}
 
-		s_output, err = Neg__str(_t_input.sn_input)
+		s_output, err = NegStr(_t_input.sn_input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
@@ -384,7 +384,7 @@ func Test_cmp(_t *testing.T) {
 	}
 
 	fn := func(_t_input T_Input) {
-		n_cmp, err := Cmp__str(_t_input.sn_input_1, _t_input.sn_input_2)
+		n_cmp, err := CmpStr(_t_input.sn_input_1, _t_input.sn_input_2)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
@@ -458,7 +458,7 @@ func Test_round(_t *testing.T) {
 
 		var sn_result__round, sn_result__round_down, sn_result__round_up string
 		{
-			err := pt_input.Set__str(_t_input.sn_input)
+			err := pt_input.SetStr(_t_input.sn_input)
 			if err != nil {
 				_t.Errorf("input string set error | err - %v", err)
 				return
@@ -468,11 +468,11 @@ func Test_round(_t *testing.T) {
 			sn_result__round = pt_input_round.String()
 
 			pt_input_round_up := pt_input.Copy()
-			pt_input_round_up.Round_up(_t_input.n_round_cnt)
+			pt_input_round_up.RoundUp(_t_input.n_round_cnt)
 			sn_result__round_up = pt_input_round_up.String()
 
 			pt_input_round_down := pt_input.Copy()
-			pt_input_round_down.Round_down(_t_input.n_round_cnt)
+			pt_input_round_down.RoundDown(_t_input.n_round_cnt)
 			sn_result__round_down = pt_input_round_down.String()
 		}
 		if sn_result__round != _t_input.sn_expected__round {
@@ -531,7 +531,7 @@ func Test_scale_limit(_t *testing.T) {
 		pt_snum := &Snum{}
 		pt_snum.Init(_n_precision, 0)
 
-		err := pt_snum.Set__str(_s_num)
+		err := pt_snum.SetStr(_s_num)
 		if err != nil {
 			_t.Fatal(err)
 		}
@@ -545,8 +545,8 @@ func Test_scale_limit(_t *testing.T) {
 	}
 
 	fn_print(128, "0")
-	fn_print(128, "-0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1")
-	fn_print(128, "0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1")
+	fn_print(128, "-0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1")
+	fn_print(128, "0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1")
 	fn_print(128, "0.1")
 	fn_print(128, "0.0000001")
 	fn_print(128, "0.1111111")
@@ -557,6 +557,6 @@ func Test_scale_limit(_t *testing.T) {
 	fn_print(128, "1111111.1111111")
 
 	fn_print(128, "1111111.1111111")
-	fn_print(128, strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal))
+	fn_print(128, strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal))
 
 }

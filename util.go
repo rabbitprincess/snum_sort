@@ -4,10 +4,10 @@ import (
 	"github.com/ericlagergren/decimal"
 )
 
-func (t *Snum) Is_zero() bool {
+func (t *Snum) IsZero() bool {
 	pt_zero := &Snum{}
 	pt_zero.Init(0, 0)
-	pt_zero.Set__zero()
+	pt_zero.SetZero()
 
 	n_cmp := t.Cmp(pt_zero)
 	if n_cmp != 0 {
@@ -16,10 +16,10 @@ func (t *Snum) Is_zero() bool {
 	return true
 }
 
-func (t *Snum) Is_zero__under() bool {
+func (t *Snum) IsZeroUnder() bool {
 	pt_zero := &Snum{}
 	pt_zero.Init(0, 0)
-	pt_zero.Set__zero()
+	pt_zero.SetZero()
 
 	n_cmp := t.Cmp(pt_zero)
 	if n_cmp != -1 {
@@ -28,10 +28,10 @@ func (t *Snum) Is_zero__under() bool {
 	return true
 }
 
-func (t *Snum) Is_zero__over() bool {
+func (t *Snum) IsZeroOver() bool {
 	pt_zero := &Snum{}
 	pt_zero.Init(0, 0)
-	pt_zero.Set__zero()
+	pt_zero.SetZero()
 
 	n_cmp := t.Cmp(pt_zero)
 	if n_cmp != 1 {
@@ -70,14 +70,14 @@ func (t *Snum) Round(_step_size int) {
 	t.decimal.Context.RoundingMode = decimal.ToZero // round_down 기준으로 복구
 }
 
-func (t *Snum) Round_down(_step_size int) {
+func (t *Snum) RoundDown(_stepSize int) {
 	t.decimal.Context.RoundingMode = decimal.ToZero
-	t.decimal.Round(_step_size)
+	t.decimal.Round(_stepSize)
 }
 
-func (t *Snum) Round_up(_step_size int) {
+func (t *Snum) RoundUp(_stepSize int) {
 	t.decimal.Context.RoundingMode = decimal.AwayFromZero
-	t.decimal.Round(_step_size)
+	t.decimal.Round(_stepSize)
 	t.decimal.Context.RoundingMode = decimal.ToZero // round_down 기준으로 복구
 }
 
@@ -86,7 +86,7 @@ func (t *Snum) Pow(_num int64) {
 }
 
 // Output:
-//  x         step_size      Group_down      Group_up
+//  x         step_size      GroupDown      Group_up
 //  123.321          -4         123.321       123.321
 //  123.321          -3         123.321       123.321
 //  123.321          -2         123.32        123.33
@@ -96,30 +96,30 @@ func (t *Snum) Pow(_num int64) {
 //  123.321           2         100           200
 //  123.321           3         0             1000
 //  123.321           4         0             10000
-func (t *Snum) Group_down(_n_step_size int) {
-	n_len_decimal := t.decimal.Scale()
-	n_len_integer := t.decimal.Precision() - n_len_decimal
+func (t *Snum) GroupDown(_stepSize int) {
+	lenDecimal := t.decimal.Scale()
+	lenInteger := t.decimal.Precision() - lenDecimal
 
-	if n_len_integer <= _n_step_size {
+	if lenInteger <= _stepSize {
 		// step_size 가 snum 자릿수를 초과할 경우 0 반환
 		t.decimal = decimal.New(0, 0)
 	} else {
 		t.decimal.Context.RoundingMode = decimal.ToZero
-		t.decimal.Quantize(-_n_step_size)
+		t.decimal.Quantize(-_stepSize)
 	}
 }
 
-func (t *Snum) Group_up(_n_step_size int) {
-	n_len_decimal := t.decimal.Scale()
-	n_len_integer := t.decimal.Precision() - n_len_decimal
+func (t *Snum) GroupUp(_stepSize int) {
+	lenDecimal := t.decimal.Scale()
+	lenInteger := t.decimal.Precision() - lenDecimal
 
-	if n_len_integer <= _n_step_size {
+	if lenInteger <= _stepSize {
 		// step_size 가 snum 자릿수를 초과할 경우 10^step_size 반환
 		t.decimal = decimal.New(10, 0)
-		t.Pow(int64(_n_step_size))
+		t.Pow(int64(_stepSize))
 	} else {
 		t.decimal.Context.RoundingMode = decimal.AwayFromZero
-		t.decimal.Quantize(-_n_step_size)
+		t.decimal.Quantize(-_stepSize)
 		t.decimal.Context.RoundingMode = decimal.ToZero
 	}
 }

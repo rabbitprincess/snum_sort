@@ -12,7 +12,7 @@ import (
 //----------------------------------------------------------------------------------------//
 // uint64
 
-func (t *Snum) Get__uint64() (u8_num uint64, err error) {
+func (t *Snum) GetUint64() (u8 uint64, err error) {
 	if t.decimal == nil {
 		return 0, nil
 	}
@@ -21,18 +21,18 @@ func (t *Snum) Get__uint64() (u8_num uint64, err error) {
 		return 0, err
 	}
 
-	u8_num, is_valid := t.decimal.Uint64()
+	u8, is_valid := t.decimal.Uint64()
 	if is_valid != true {
 		return 0, fmt.Errorf("Failed to convert to uint64 | %s", t.String())
 	}
-	return u8_num, nil
+	return u8, nil
 }
 
-func (t *Snum) Set__uint64(_u8_num uint64) (err error) {
+func (t *Snum) SetUint64(_u8 uint64) (err error) {
 	if t.decimal == nil {
 		t.Init(0, 0)
 	}
-	t.decimal.SetUint64(_u8_num)
+	t.decimal.SetUint64(_u8)
 
 	return nil
 }
@@ -40,7 +40,7 @@ func (t *Snum) Set__uint64(_u8_num uint64) (err error) {
 //----------------------------------------------------------------------------------------//
 // str
 
-func (t *Snum) Get__str() (s_num string, err error) {
+func (t *Snum) GetStr() (sn string, err error) {
 	if t.decimal == nil {
 		return "", nil
 	}
@@ -49,17 +49,17 @@ func (t *Snum) Get__str() (s_num string, err error) {
 		return "", err
 	}
 
-	s_num = fmt.Sprintf("%f", t.decimal.Reduce())
-	return s_num, nil
+	sn = fmt.Sprintf("%f", t.decimal.Reduce())
+	return sn, nil
 }
 
-func (t *Snum) Set__str(_s_num string) (err error) {
+func (t *Snum) SetStr(_sn string) (err error) {
 	if t.decimal == nil {
 		t.Init(0, 0)
 	}
-	_, is_valid := t.decimal.SetString(_s_num)
+	_, is_valid := t.decimal.SetString(_sn)
 	if is_valid != true {
-		return fmt.Errorf("invalid number | %s", _s_num)
+		return fmt.Errorf("invalid number | %s", _sn)
 	}
 
 	return nil
@@ -68,33 +68,33 @@ func (t *Snum) Set__str(_s_num string) (err error) {
 //----------------------------------------------------------------------------------------//
 // raw
 
-func (t *Snum) Get__raw() (s_raw string, n_len_decimal int, is_minus bool) {
-	pu8_int, pt_big := decimal.Raw(t.decimal.Reduce())
-	if *pu8_int < math.MaxUint64 { // under maxUint64
-		s_raw = strconv.FormatUint(*pu8_int, 10)
+func (t *Snum) GetRaw() (sn string, lenDecimal int, isMinus bool) {
+	pu8, big := decimal.Raw(t.decimal.Reduce())
+	if *pu8 < math.MaxUint64 { // under maxUint64
+		sn = strconv.FormatUint(*pu8, 10)
 	} else { // over maxUint64
-		s_raw = pt_big.String()
+		sn = big.String()
 	}
 
 	// - 처리
 	if t.decimal.Sign() < 0 {
-		is_minus = true
+		isMinus = true
 	}
 
-	n_len_decimal = t.decimal.Scale()
-	return s_raw, n_len_decimal, is_minus
+	lenDecimal = t.decimal.Scale()
+	return sn, lenDecimal, isMinus
 }
 
-func (t *Snum) Set__raw(_s_raw string, _n_len_decimal int, _is_minus bool) {
+func (t *Snum) SetRaw(_sn string, _lenDecimal int, _isMinus bool) {
 	if t.decimal == nil {
 		t.Init(0, 0) // 임시
 	}
-	pt_big := big.NewInt(0)
-	pt_big.SetString(_s_raw, 10)
-	t.decimal.SetBigMantScale(pt_big, _n_len_decimal)
+	big := big.NewInt(0)
+	big.SetString(_sn, 10)
+	t.decimal.SetBigMantScale(big, _lenDecimal)
 
 	// - 처리
-	if _is_minus == true {
+	if _isMinus == true {
 		t.decimal.Neg(t.decimal)
 	}
 }
@@ -102,46 +102,46 @@ func (t *Snum) Set__raw(_s_raw string, _n_len_decimal int, _is_minus bool) {
 //------------------------------------------------------------------------------------------//
 // util
 
-func (t *Snum) Set__zero() {
+func (t *Snum) SetZero() {
 	if t.decimal == nil {
 		t.Init(0, 0)
 	}
 	t.decimal.SetUint64(0)
 }
 
-func (t *Snum) Trim_digit() error {
-	n_len_decimal := t.decimal.Scale()
-	n_len_integer := t.decimal.Precision() - t.decimal.Scale()
+func (t *Snum) TrimDigit() error {
+	lenDecimal := t.decimal.Scale()
+	lenInteger := t.decimal.Precision() - t.decimal.Scale()
 
-	var err_decimal, err_integer error
+	var errDecimal, errInteger error
 
 	// 후처리 - 소수
-	if n_len_decimal > t.len_decimal {
-		err_decimal = fmt.Errorf("Decimal limit exceeded | input : %d | limit : %d", n_len_decimal, t.len_decimal) // 에러 처리
+	if lenDecimal > t.lenDecimal {
+		errDecimal = fmt.Errorf("Decimal limit exceeded | input : %d | limit : %d", lenDecimal, t.lenDecimal) // 에러 처리
 
-		t.decimal.Quantize(t.len_decimal)
+		t.decimal.Quantize(t.lenDecimal)
 	}
 
 	// 후처리 - 정수
-	if n_len_integer > t.len_standard {
-		err_integer = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", n_len_integer, t.len_standard) // 에러 처리
+	if lenInteger > t.lenStandard {
+		errInteger = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", lenInteger, t.lenStandard) // 에러 처리
 
 		pt_snum := &Snum{}
 		pt_snum.Init(0, 0)
 		pt_snum.decimal.SetUint64(10)
-		pt_snum.Pow(int64(t.len_standard))
-		n_len_decimal__before := t.decimal.Scale()
+		pt_snum.Pow(int64(t.lenStandard))
+		lenDecimal_before := t.decimal.Scale()
 
 		t.decimal.Rem(t.decimal, pt_snum.decimal)
-		t.decimal.SetScale(n_len_decimal__before)
+		t.decimal.SetScale(lenDecimal_before)
 	}
 
 	// 에러일 경우 리턴
-	if err_decimal != nil {
-		return err_decimal
+	if errDecimal != nil {
+		return errDecimal
 	}
-	if err_integer != nil {
-		return err_integer
+	if errInteger != nil {
+		return errInteger
 	}
 	return nil
 }

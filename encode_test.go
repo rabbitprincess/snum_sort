@@ -20,10 +20,10 @@ func Test__encode_decode(_t *testing.T) {
 
 		// Byte_encode, Byte_decode
 		// string -> bigint -> binary -> bigint -> string
-		pt_sorted := &T_Encoder{}
+		pt_sorted := &Encoder{}
 		pt_sorted.Init()
 		{
-			err := pt_sorted.Set__str(_s_num__input)
+			err := pt_sorted.SetStr(_s_num__input)
 			if err != nil {
 				_t.Errorf("Set__str\n%s:%v\n%s:%v\n", "_s_num__input", _s_num__input, "err", err)
 				return
@@ -44,7 +44,7 @@ func Test__encode_decode(_t *testing.T) {
 				return
 			}
 
-			s_num__recovery, err := pt_sorted.Get__str()
+			s_num__recovery, err := pt_sorted.GetStr()
 			if err != nil {
 				_t.Errorf("Get__str\n%s:%v\n%s:%v\n", "_s_num__input", _s_num__input, "err", err)
 				return
@@ -111,13 +111,13 @@ func Test__encode_decode(_t *testing.T) {
 		// 자릿수 한도
 		{
 			// 정수는 96 자리 까지 ok
-			fn("1"+strings.Repeat("0", DEF_b1_header__max_len__standard-1), "")
-			fn(strings.Repeat("9", DEF_b1_header__max_len__standard), "")
+			fn("1"+strings.Repeat("0", DEF_headerLenInteger-1), "")
+			fn(strings.Repeat("9", DEF_headerLenInteger), "")
 			// 소수는 32 자리 까지 ok
-			fn("0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1", "")
+			fn("0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "")
 
 			// 양수 최대값
-			fn(strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal), "")
+			fn(strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "")
 		}
 	}
 
@@ -169,13 +169,13 @@ func Test__encode_decode(_t *testing.T) {
 		// 자릿수 한도
 		{
 			// 정수는 96 자리 까지 ok
-			fn("-1"+strings.Repeat("0", DEF_b1_header__max_len__standard-1), "")
-			fn("-"+strings.Repeat("9", DEF_b1_header__max_len__standard), "")
+			fn("-1"+strings.Repeat("0", DEF_headerLenInteger-1), "")
+			fn("-"+strings.Repeat("9", DEF_headerLenInteger), "")
 			// 소수는 32 자리 까지 ok
-			fn("-0."+strings.Repeat("0", DEF_b1_header__max_len__decimal-1)+"1", "")
+			fn("-0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "")
 
 			// 음수 최소값
-			fn("-"+strings.Repeat("9", DEF_b1_header__max_len__standard)+"."+strings.Repeat("9", DEF_b1_header__max_len__decimal), "")
+			fn("-"+strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "")
 		}
 	}
 }
@@ -192,9 +192,9 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input := func(_s_num string) {
 		var err error
 
-		pt_bt_sorted := &T_Encoder{}
+		pt_bt_sorted := &Encoder{}
 		pt_bt_sorted.Init()
-		pt_bt_sorted.Set__str(_s_num)
+		pt_bt_sorted.SetStr(_s_num)
 		bt_encode, err := pt_bt_sorted.Encode()
 		if err != nil {
 			_t.Errorf("input - %s | err - %v", _s_num, err)
@@ -235,8 +235,8 @@ func Test_encode__sort(_t *testing.T) {
 			fn_print()
 		}
 	}
-	fn_input("-" + strings.Repeat("9", DEF_b1_header__max_len__standard) + "." + strings.Repeat("9", DEF_b1_header__max_len__decimal)) // 음수 최소값
-	fn_input("-" + strings.Repeat("9", DEF_b1_header__max_len__standard))
+	fn_input("-" + strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 음수 최소값
+	fn_input("-" + strings.Repeat("9", DEF_headerLenInteger))
 	fn_input("-10000")
 	fn_input("-9999")
 	fn_input("-1.2")
@@ -259,9 +259,9 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input("-0.1")
 	fn_input("-0.01")
 	fn_input("-0.001")
-	fn_input("-0." + strings.Repeat("0", DEF_b1_header__max_len__decimal-1) + "1") // 음수 최대값
+	fn_input("-0." + strings.Repeat("0", DEF_headerLenDecimal-1) + "1") // 음수 최대값
 	fn_input("0")
-	fn_input("0." + strings.Repeat("0", DEF_b1_header__max_len__decimal-1) + "1") // 양수 최소값
+	fn_input("0." + strings.Repeat("0", DEF_headerLenDecimal-1) + "1") // 양수 최소값
 	fn_input("0.001")
 	fn_input("0.01")
 	fn_input("0.1")
@@ -274,8 +274,8 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input("9")
 	fn_input("9999")
 	fn_input("10000")
-	fn_input(strings.Repeat("9", DEF_b1_header__max_len__standard))
-	fn_input(strings.Repeat("9", DEF_b1_header__max_len__standard) + "." + strings.Repeat("9", DEF_b1_header__max_len__decimal)) // 양수 최대값
+	fn_input(strings.Repeat("9", DEF_headerLenInteger))
+	fn_input(strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 양수 최대값
 
 	sort.SliceStable(arrpt_sort, func(_i, _j int) bool {
 		n_cmp := bytes.Compare(arrpt_sort[_i].bt_num, arrpt_sort[_j].bt_num)
