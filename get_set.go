@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/big"
-	"strconv"
 
 	"github.com/ericlagergren/decimal"
 )
@@ -28,11 +27,11 @@ func (t *Snum) GetUint64() (u8 uint64, err error) {
 	return u8, nil
 }
 
-func (t *Snum) SetUint64(_u8 uint64) (err error) {
+func (t *Snum) SetUint64(u8 uint64) (err error) {
 	if t.decimal == nil {
 		t.Init(0, 0)
 	}
-	t.decimal.SetUint64(_u8)
+	t.decimal.SetUint64(u8)
 
 	return nil
 }
@@ -68,12 +67,12 @@ func (t *Snum) SetStr(_sn string) (err error) {
 //----------------------------------------------------------------------------------------//
 // raw
 
-func (t *Snum) GetRaw() (sn string, lenDecimal int, isMinus bool) {
-	pu8, big := decimal.Raw(t.decimal.Reduce())
+func (t *Snum) GetRaw() (big *big.Int, lenDecimal int, isMinus bool) {
+	pu8, pbig := decimal.Raw(t.decimal.Reduce())
 	if *pu8 < math.MaxUint64 { // under maxUint64
-		sn = strconv.FormatUint(*pu8, 10)
+		big = big.SetUint64(*pu8)
 	} else { // over maxUint64
-		sn = big.String()
+		big = pbig
 	}
 
 	// - 처리
@@ -82,19 +81,18 @@ func (t *Snum) GetRaw() (sn string, lenDecimal int, isMinus bool) {
 	}
 
 	lenDecimal = t.decimal.Scale()
-	return sn, lenDecimal, isMinus
+	return big, lenDecimal, isMinus
 }
 
-func (t *Snum) SetRaw(_sn string, _lenDecimal int, _isMinus bool) {
+func (t *Snum) SetRaw(big *big.Int, lenDecimal int, isMinus bool) {
 	if t.decimal == nil {
 		t.Init(0, 0) // 임시
 	}
-	big := big.NewInt(0)
-	big.SetString(_sn, 10)
-	t.decimal.SetBigMantScale(big, _lenDecimal)
+
+	t.decimal.SetBigMantScale(big, lenDecimal)
 
 	// - 처리
-	if _isMinus == true {
+	if isMinus == true {
 		t.decimal.Neg(t.decimal)
 	}
 }

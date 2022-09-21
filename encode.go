@@ -1,5 +1,7 @@
 package snum
 
+import "math/big"
+
 //------------------------------------------------------------------------------------------//
 // binary - sorted
 
@@ -18,7 +20,10 @@ func (t *Encoder) Encode() (ret []byte, err error) {
 	var lenDecimal int
 	var isMinus bool
 	{
-		raw, lenDecimal, isMinus = t.Snum.GetRaw()
+		var bigRaw *big.Int
+		bigRaw, lenDecimal, isMinus = t.Snum.GetRaw()
+		raw = bigRaw.String()
+
 		// s_num 이 0일 경우 후처리
 		if raw == "0" {
 			lenDecimal = DEF_headerLenDecimal
@@ -108,7 +113,8 @@ func (t *Encoder) Decode(_num []byte) (err error) {
 
 	// snum 세팅 ( T_Snum 사용 )
 	{
-		t.Snum.SetRaw(s_raw, n_len__decimal, is_minus)
+		big, _ := big.NewInt(0).SetString(s_raw, 10)
+		t.Snum.SetRaw(big, n_len__decimal, is_minus)
 	}
 	return nil
 }
