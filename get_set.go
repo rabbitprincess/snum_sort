@@ -52,13 +52,13 @@ func (t *Snum) GetStr() (sn string, err error) {
 	return sn, nil
 }
 
-func (t *Snum) SetStr(_sn string) (err error) {
+func (t *Snum) SetStr(sn string) (err error) {
 	if t.decimal == nil {
 		t.Init(0, 0)
 	}
-	_, is_valid := t.decimal.SetString(_sn)
+	_, is_valid := t.decimal.SetString(sn)
 	if is_valid != true {
-		return fmt.Errorf("invalid number | %s", _sn)
+		return fmt.Errorf("invalid number | %s", sn)
 	}
 
 	return nil
@@ -128,10 +128,10 @@ func (t *Snum) TrimDigit() error {
 		pt_snum.Init(0, 0)
 		pt_snum.decimal.SetUint64(10)
 		pt_snum.Pow(int64(t.lenStandard))
-		lenDecimal_before := t.decimal.Scale()
+		lenDecimalBefore := t.decimal.Scale()
 
 		t.decimal.Rem(t.decimal, pt_snum.decimal)
-		t.decimal.SetScale(lenDecimal_before)
+		t.decimal.SetScale(lenDecimalBefore)
 	}
 
 	// 에러일 경우 리턴

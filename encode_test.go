@@ -9,49 +9,49 @@ import (
 )
 
 func Test__encode_decode(_t *testing.T) {
-	fn := func(_s_num__input string, _s_num__expected string) {
+	fn := func(input string, expect string) {
 		// 기대값 설정
 		{
 			// 기대값 입력이 비어있으면 입력값과 동일한 것이 정답인 것으로 인정한다.
-			if _s_num__expected == "" {
-				_s_num__expected = _s_num__input
+			if expect == "" {
+				expect = input
 			}
 		}
 
 		// Byte_encode, Byte_decode
 		// string -> bigint -> binary -> bigint -> string
-		pt_sorted := &Encoder{}
-		pt_sorted.Init()
+		sorted := &Encoder{}
+		sorted.Init()
 		{
-			err := pt_sorted.SetStr(_s_num__input)
+			err := sorted.SetStr(input)
 			if err != nil {
-				_t.Errorf("Set__str\n%s:%v\n%s:%v\n", "_s_num__input", _s_num__input, "err", err)
+				_t.Errorf("Set__str\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
 				return
 			}
 
-			bt_num, err := pt_sorted.Encode()
+			bt_num, err := sorted.Encode()
 			if err != nil {
-				_t.Errorf("Decode\n%s:%v\n%s:%v\n", "_s_num__input", _s_num__input, "err", err)
+				_t.Errorf("Decode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
 				return
 			}
 
 			// for debug
 			// fmt.Printf("%30s\n", fmt.Sprintf("%02x", bt_num))
 
-			err = pt_sorted.Decode(bt_num)
+			err = sorted.Decode(bt_num)
 			if err != nil {
-				_t.Errorf("Encode\n%s:%v\n%s:%v\n", "_s_num__input", _s_num__input, "err", err)
+				_t.Errorf("Encode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
 				return
 			}
 
-			s_num__recovery, err := pt_sorted.GetStr()
+			recovery, err := sorted.GetStr()
 			if err != nil {
-				_t.Errorf("Get__str\n%s:%v\n%s:%v\n", "_s_num__input", _s_num__input, "err", err)
+				_t.Errorf("Get__str\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
 				return
 			}
 
-			if _s_num__expected != s_num__recovery {
-				_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", _s_num__expected, "s_num__recovery", s_num__recovery)
+			if expect != recovery {
+				_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", expect, "s_num__recovery", recovery)
 				return
 			}
 		}
@@ -182,55 +182,55 @@ func Test__encode_decode(_t *testing.T) {
 
 func Test_encode__sort(_t *testing.T) {
 	type T_data struct {
-		s_num  string
-		bt_num []byte
+		snum  string
+		btnum []byte
 	}
 
-	arrpt_ori := make([]*T_data, 0, 100)
-	arrpt_sort := make([]*T_data, 0, 100)
+	oris := make([]*T_data, 0, 100)
+	sorts := make([]*T_data, 0, 100)
 
-	fn_input := func(_s_num string) {
+	fn_input := func(snum string) {
 		var err error
 
-		pt_bt_sorted := &Encoder{}
-		pt_bt_sorted.Init()
-		pt_bt_sorted.SetStr(_s_num)
-		bt_encode, err := pt_bt_sorted.Encode()
+		sorted := &Encoder{}
+		sorted.Init()
+		sorted.SetStr(snum)
+		encode, err := sorted.Encode()
 		if err != nil {
-			_t.Errorf("input - %s | err - %v", _s_num, err)
+			_t.Errorf("input - %s | err - %v", snum, err)
 		}
 
 		pt_data := &T_data{
-			s_num:  _s_num,
-			bt_num: bt_encode,
+			snum:  snum,
+			btnum: encode,
 		}
-		arrpt_ori = append(arrpt_ori, pt_data)
-		arrpt_sort = append(arrpt_sort, pt_data)
+		oris = append(oris, pt_data)
+		sorts = append(sorts, pt_data)
 	}
 
 	fn_print := func() {
 		fmt.Printf("-----------------------------------------\n")
 		fmt.Printf("%10s - %10s - %s", "orignal", "sort", "[]byte(ori기준)\n")
-		for i := 0; i < len(arrpt_ori); i++ {
-			fmt.Printf("%10s - %10s - %v\n", arrpt_ori[i].s_num, arrpt_sort[i].s_num, arrpt_ori[i].bt_num)
+		for i := 0; i < len(oris); i++ {
+			fmt.Printf("%10s - %10s - %v\n", oris[i].snum, sorts[i].snum, oris[i].btnum)
 		}
 		fmt.Printf("-----------------------------------------\n")
 	}
 
-	fn_error_check := func() {
-		is_exist_error := false
-		for i := 0; i < len(arrpt_ori); i++ {
+	fn_errCheck := func() {
+		isExistErr := false
+		for i := 0; i < len(oris); i++ {
 			// 같지 않으면 에러 출력
-			if arrpt_ori[i] != arrpt_sort[i] {
-				if is_exist_error == false {
+			if oris[i] != sorts[i] {
+				if isExistErr == false {
 					_t.Errorf("-----------------------------------------\n")
 					_t.Errorf("%10s - %10s - %s", "orignal", "sort", "[]byte(ori기준)\n")
 				}
-				is_exist_error = true
-				_t.Errorf("%10s - %10s %08b\n", arrpt_ori[i].s_num, arrpt_sort[i].s_num, arrpt_ori[i].bt_num)
+				isExistErr = true
+				_t.Errorf("%10s - %10s %08b\n", oris[i].snum, sorts[i].snum, oris[i].btnum)
 			}
 		}
-		if is_exist_error == true {
+		if isExistErr == true {
 			_t.Errorf("-----------------------------------------\n")
 			fn_print()
 		}
@@ -277,13 +277,13 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input(strings.Repeat("9", DEF_headerLenInteger))
 	fn_input(strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 양수 최대값
 
-	sort.SliceStable(arrpt_sort, func(_i, _j int) bool {
-		n_cmp := bytes.Compare(arrpt_sort[_i].bt_num, arrpt_sort[_j].bt_num)
+	sort.SliceStable(sorts, func(i, j int) bool {
+		n_cmp := bytes.Compare(sorts[i].btnum, sorts[j].btnum)
 		if n_cmp == 1 {
 			return false
 		}
 		return true
 	})
 
-	fn_error_check()
+	fn_errCheck()
 }

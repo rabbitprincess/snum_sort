@@ -3,175 +3,173 @@ package snum
 //------------------------------------------------------------------------//
 // global
 
-func Add(_a *Snum, _b *Snum) (ret *Snum) {
-	ret = _a.Copy()
-	ret.Add(_b)
+func Add(a, b *Snum) (ret *Snum) {
+	ret = a.Copy()
+	ret.Add(b)
 	return ret
 }
 
-func AddStr(_a, _b string) (sn string, err error) {
-	pt_a := &Snum{}
-	pt_a.Init(0, 0)
-	err = pt_a.SetStr(_a)
+func AddStr(a, b string) (ret string, err error) {
+	snA := &Snum{}
+	snA.Init(0, 0)
+	err = snA.SetStr(a)
 	if err != nil {
 		return "", err
 	}
 
-	pt_b := &Snum{}
-	pt_b.Init(0, 0)
-	err = pt_b.SetStr(_b)
+	snB := &Snum{}
+	snB.Init(0, 0)
+	err = snB.SetStr(b)
 	if err != nil {
 		return "", err
 	}
 
-	pt_add := Add(pt_a, pt_b)
-
-	sn = pt_add.String()
-	return sn, nil
+	ret = Add(snA, snB).String()
+	return ret, nil
 }
 
-func Sub(_a *Snum, _b *Snum) (pt_ret *Snum) {
-	pt_ret = _a.Copy()
-	pt_ret.Sub(_b)
-	return pt_ret
+func Sub(a, b *Snum) (ret *Snum) {
+	ret = a.Copy()
+	ret.Sub(b)
+	return ret
 }
 
-func SubStr(_a, _b string) (sn string, err error) {
-	pt_a := &Snum{}
-	pt_a.Init(0, 0)
-	err = pt_a.SetStr(_a)
+func SubStr(a, b string) (ret string, err error) {
+	snA := &Snum{}
+	snA.Init(0, 0)
+	err = snA.SetStr(a)
 	if err != nil {
 		return "", err
 	}
 
-	pt_b := &Snum{}
-	pt_b.Init(0, 0)
-	err = pt_b.SetStr(_b)
+	snB := &Snum{}
+	snB.Init(0, 0)
+	err = snB.SetStr(b)
 	if err != nil {
 		return "", err
 	}
 
-	pt_sub := Sub(pt_a, pt_b)
-	sn = pt_sub.String()
-	return sn, nil
+	pt_sub := Sub(snA, snB)
+	ret = pt_sub.String()
+	return ret, nil
 }
 
-func Mul(_a *Snum, _b *Snum) (pt_ret *Snum) {
-	pt_ret = _a.Copy()
-	pt_ret.Mul(_b)
-	return pt_ret
+func Mul(a *Snum, b *Snum) (ret *Snum) {
+	ret = a.Copy()
+	ret.Mul(b)
+	return ret
 }
 
-func MulStr(_a, _b string) (sn string, err error) {
-	pt_a := &Snum{}
-	pt_a.Init(0, 0)
-	err = pt_a.SetStr(_a)
+func MulStr(a, b string) (ret string, err error) {
+	snA := &Snum{}
+	snA.Init(0, 0)
+	err = snA.SetStr(a)
 	if err != nil {
 		return "", err
 	}
 
-	pt_b := &Snum{}
-	pt_b.Init(0, 0)
-	err = pt_b.SetStr(_b)
+	snB := &Snum{}
+	snB.Init(0, 0)
+	err = snB.SetStr(b)
 	if err != nil {
 		return "", err
 	}
 
-	pt_mul := Mul(pt_a, pt_b)
-	sn = pt_mul.String()
-	return sn, nil
+	pt_mul := Mul(snA, snB)
+	ret = pt_mul.String()
+	return ret, nil
 }
 
-func Div(_a *Snum, _b *Snum) (pt_ret *Snum) {
-	pt_ret = _a.Copy()
-	pt_ret.Div(_b)
-	return pt_ret
+func Div(a *Snum, b *Snum) (ret *Snum) {
+	ret = a.Copy()
+	ret.Div(b)
+	return ret
 }
 
-func DivStr(_a, _b string) (sn string, err error) {
-	pt_a := &Snum{}
-	pt_a.Init(0, 0)
-	err = pt_a.SetStr(_a)
+func DivStr(a, b string) (ret string, err error) {
+	ptA := &Snum{}
+	ptA.Init(0, 0)
+	err = ptA.SetStr(a)
 	if err != nil {
 		return "", err
 	}
 
-	pt_b := &Snum{}
-	pt_b.Init(0, 0)
-	err = pt_b.SetStr(_b)
+	snB := &Snum{}
+	snB.Init(0, 0)
+	err = snB.SetStr(b)
 	if err != nil {
 		return "", err
 	}
 
-	pt_div := Div(pt_a, pt_b)
-	sn = pt_div.String()
-	return sn, nil
+	div := Div(ptA, snB)
+	ret = div.String()
+	return ret, nil
 }
 
 //-------------------------------------------------------------------------------//
 // Tum
 
-func (t *Snum) Add(_pt *Snum) {
-	t.decimal.Add(t.decimal, _pt.decimal)
+func (t *Snum) Add(sn *Snum) {
+	t.decimal.Add(t.decimal, sn.decimal)
 }
 
-func (t *Snum) AddStr(_sn string) (err error) {
-	ptum := &Snum{}
-	ptum.Init(0, 0)
-	err = ptum.SetStr(_sn)
+func (t *Snum) AddStr(sn string) (err error) {
+	snA := &Snum{}
+	snA.Init(0, 0)
+	err = snA.SetStr(sn)
 	if err != nil {
 		return err
 	}
 
-	t.Add(ptum)
+	t.Add(snA)
 	return nil
 }
 
-func (t *Snum) Sub(_pt *Snum) {
-	t.decimal.Sub(t.decimal, _pt.decimal)
+func (t *Snum) Sub(sn *Snum) {
+	t.decimal.Sub(t.decimal, sn.decimal)
 }
 
-func (t *Snum) SubStr(_sn string) (err error) {
-	ptum := &Snum{}
-	ptum.Init(0, 0)
-	err = ptum.SetStr(_sn)
+func (t *Snum) SubStr(sn string) (err error) {
+	ptB := &Snum{}
+	ptB.Init(0, 0)
+	err = ptB.SetStr(sn)
 	if err != nil {
 		return err
 	}
 
-	t.Sub(ptum)
+	t.Sub(ptB)
 	return nil
 }
 
-func (t *Snum) Mul(_pt *Snum) {
-	t.decimal.Mul(t.decimal, _pt.decimal)
+func (t *Snum) Mul(sn *Snum) {
+	t.decimal.Mul(t.decimal, sn.decimal)
 }
 
-func (t *Snum) MulStr(_sn string) (err error) {
-	ptum := &Snum{}
-	ptum.Init(0, 0)
-	err = ptum.SetStr(_sn)
+func (t *Snum) MulStr(sn string) (err error) {
+	snA := &Snum{}
+	snA.Init(0, 0)
+	err = snA.SetStr(sn)
 	if err != nil {
 		return err
 	}
 
-	t.Mul(ptum)
+	t.Mul(snA)
 	return nil
 }
 
-func (t *Snum) Div(_pt *Snum) {
-	t.decimal.Quo(t.decimal, _pt.decimal)
+func (t *Snum) Div(sn *Snum) {
+	t.decimal.Quo(t.decimal, sn.decimal)
 
 	if t.decimal.IsNormal() == true {
 		t.decimal.Quantize(DEF_lenExtendDecimalForCalc)
 	}
 }
 
-func (t *Snum) DivStr(_sn string) (err error) {
-	ptum := &Snum{}
-	ptum.Init(0, 0)
-	err = ptum.SetStr(_sn)
+func (t *Snum) DivStr(sn string) (err error) {
+	snB := &Snum{}
+	snB.Init(0, 0)
+	err = snB.SetStr(sn)
 
-	t.Div(ptum)
+	t.Div(snB)
 	return nil
 }

@@ -10,12 +10,12 @@ type Snum struct {
 	lenDecimal  int
 }
 
-func (t *Snum) Init(_len_standard, _len_decimal int) {
-	if _len_standard == 0 {
-		_len_standard = 100
+func (t *Snum) Init(lenStandard, lenDecimal int) {
+	if lenStandard == 0 {
+		lenStandard = 96
 	}
-	if _len_decimal == 0 {
-		_len_decimal = 20
+	if lenDecimal == 0 {
+		lenDecimal = 32
 	}
 
 	t.decimal = &decimal.Big{
@@ -25,30 +25,30 @@ func (t *Snum) Init(_len_standard, _len_decimal int) {
 			RoundingMode:  decimal.ToZero,
 		},
 	}
-	t.lenStandard = _len_standard
-	t.lenDecimal = _len_decimal
+	t.lenStandard = lenStandard
+	t.lenDecimal = lenDecimal
 }
 
 func (t *Snum) Copy() *Snum {
-	pt_ret := &Snum{}
-	pt_ret.Init(t.lenStandard, t.lenDecimal)
-	pt_ret.decimal.Copy(t.decimal)
-	return pt_ret
+	ret := &Snum{}
+	ret.Init(t.lenStandard, t.lenDecimal)
+	ret.decimal.Copy(t.decimal)
+	return ret
 }
 
 // for interface - package json
-func (t *Snum) UnmarshalJSON(_bt []byte) error {
-	err := t.SetStr(string(_bt))
+func (t *Snum) UnmarshalJSON(bt []byte) error {
+	err := t.SetStr(string(bt))
 	return err
 }
 
 // for interface - package json
 func (t *Snum) MarshalJSON() ([]byte, error) {
-	s_num, err := t.GetStr()
-	return []byte(s_num), err
+	num, err := t.GetStr()
+	return []byte(num), err
 }
 
 func (t *Snum) String() string {
-	s_num, _ := t.GetStr()
-	return s_num
+	num, _ := t.GetStr()
+	return num
 }

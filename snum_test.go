@@ -7,20 +7,17 @@ import (
 )
 
 func Test_trim(_t *testing.T) {
-	fn := func(_s_num__input, _s_num__expected string, _n_len_int, _n_len_decimal int) {
+	fn := func(input, expect string, lenInt, lenDecimal int) {
 		pt_snum := &Snum{}
-		pt_snum.Init(_n_len_int, _n_len_decimal)
-		pt_snum.SetStr(_s_num__input)
+		pt_snum.Init(lenInt, lenDecimal)
+		pt_snum.SetStr(input)
 		pt_snum.TrimDigit()
 
-		s_num_result := pt_snum.String()
+		result := pt_snum.String()
 
-		if s_num_result != _s_num__expected {
-			_t.Errorf("invalid trim | result : [%s] | expected : [%s]", s_num_result, _s_num__expected)
+		if result != expect {
+			_t.Errorf("invalid trim | result : [%s] | expected : [%s]", result, expect)
 		}
-		fmt.Println("before :", _s_num__input)
-		fmt.Println("after :", s_num_result)
-		fmt.Println()
 	}
 
 	fn("1", "1", 1, 1)
@@ -46,12 +43,12 @@ func Test_trim(_t *testing.T) {
 }
 
 func Test_set_get(_t *testing.T) {
-	fn := func(_s_num__input string, _s_num__expected string) {
+	fn := func(input string, expect string) {
 		// 기대값 설정
 		{
 			// 기대값 입력이 비어있으면 입력값과 동일한 것이 정답인 것으로 인정한다.
-			if _s_num__expected == "" {
-				_s_num__expected = _s_num__input
+			if expect == "" {
+				expect = input
 			}
 		}
 
@@ -60,14 +57,14 @@ func Test_set_get(_t *testing.T) {
 		pt_snum := &Snum{}
 		pt_snum.Init(0, 0)
 		{
-			err := pt_snum.SetStr(_s_num__input)
+			err := pt_snum.SetStr(input)
 			if err != nil {
-				_t.Errorf("String__set\n%s:%v\n%s:%v\n", "_s_num__input :", _s_num__input, "err", err)
+				_t.Errorf("String__set\n%s:%v\n%s:%v\n", "_s_num__input :", input, "err", err)
 			}
 
 			s_num__recovery := pt_snum.String()
-			if _s_num__expected != s_num__recovery {
-				_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", _s_num__expected, "s_num__recovery", s_num__recovery)
+			if expect != s_num__recovery {
+				_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", expect, "s_num__recovery", s_num__recovery)
 				return
 			}
 		}
@@ -195,30 +192,30 @@ func Test_set_get(_t *testing.T) {
 //
 
 func Test_copy(_t *testing.T) {
-	fn := func(_sn_input string) {
-		pt_ori := &Snum{}
-		pt_ori.Init(0, 0)
-		err := pt_ori.SetStr(_sn_input)
+	fn := func(input string) {
+		snOri := &Snum{}
+		snOri.Init(0, 0)
+		err := snOri.SetStr(input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
 		}
-		sn_ori, err := pt_ori.GetStr()
+		sOri, err := snOri.GetStr()
 		if err != nil {
 			_t.Errorf("string get error | err - %v", err)
 			return
 		}
 
-		pt_copy := &Snum{}
-		pt_copy.Init(0, 0)
-		pt_copy.decimal.Copy(pt_ori.decimal)
-		sn_copy, err := pt_copy.GetStr()
+		snCopy := &Snum{}
+		snCopy.Init(0, 0)
+		snCopy.decimal.Copy(snOri.decimal)
+		sCopy, err := snCopy.GetStr()
 		if err != nil {
 			_t.Errorf("string get error | err - %v", err)
 			return
 		}
-		if sn_ori != sn_copy {
-			_t.Errorf("%s copy error | expected : %s, result : %v\n", _sn_input, sn_ori, sn_copy)
+		if sOri != sCopy {
+			_t.Errorf("%s copy error | expected : %s, result : %v\n", input, sOri, sCopy)
 		}
 	}
 
@@ -255,290 +252,290 @@ func Test_copy(_t *testing.T) {
 }
 
 func Test_calc(_t *testing.T) {
-	type T_Input struct {
-		sn_input_1       string
-		sn_input_2       string
-		sn_expected__add string
-		sn_expected__sub string
-		sn_expected__mul string
-		sn_expected__div string
+	type Input struct {
+		inputA    string
+		inputB    string
+		expectAdd string
+		expectSub string
+		expectMul string
+		expectDiv string
 	}
 
-	fn := func(_t_input T_Input) {
-		arrs_calc := []string{"add", "sub", "mul", "div"}
-		var s_op string
+	fn := func(input Input) {
+		calcs := []string{"add", "sub", "mul", "div"}
+		var op string
 		var err error
-		var sn_result string
-		var sn_expect string
-		for _, s_calc := range arrs_calc {
-			switch s_calc {
+		var result string
+		var expect string
+		for _, calc := range calcs {
+			switch calc {
 			case "add":
-				sn_result, err = AddStr(_t_input.sn_input_1, _t_input.sn_input_2)
-				s_op = "+"
-				sn_expect = _t_input.sn_expected__add
+				result, err = AddStr(input.inputA, input.inputB)
+				op = "+"
+				expect = input.expectAdd
 			case "sub":
-				sn_result, err = SubStr(_t_input.sn_input_1, _t_input.sn_input_2)
-				s_op = "-"
-				sn_expect = _t_input.sn_expected__sub
+				result, err = SubStr(input.inputA, input.inputB)
+				op = "-"
+				expect = input.expectSub
 			case "mul":
-				sn_result, err = MulStr(_t_input.sn_input_1, _t_input.sn_input_2)
-				s_op = "*"
-				sn_expect = _t_input.sn_expected__mul
+				result, err = MulStr(input.inputA, input.inputB)
+				op = "*"
+				expect = input.expectMul
 			case "div":
-				sn_result, err = DivStr(_t_input.sn_input_1, _t_input.sn_input_2)
-				s_op = "/"
-				sn_expect = _t_input.sn_expected__div
+				result, err = DivStr(input.inputA, input.inputB)
+				op = "/"
+				expect = input.expectDiv
 			}
 			if err != nil {
 				_t.Errorf("err - %v", err)
 			}
-			if sn_expect != sn_result {
-				_t.Errorf("\n%s %s %s\n%10s - %s\n%10s - %s\n", _t_input.sn_input_1, s_op, _t_input.sn_input_2, "result", sn_result, "expect", sn_expect)
+			if expect != result {
+				_t.Errorf("\n%s %s %s\n%10s - %s\n%10s - %s\n", input.inputA, op, input.inputB, "result", result, "expect", expect)
 			}
 		}
 	}
 
-	fn(T_Input{"111", "111", "222", "0", "12321", "1"})
-	fn(T_Input{"111", "-111", "0", "222", "-12321", "-1"})
-	fn(T_Input{"+111", "-111", "0", "222", "-12321", "-1"})
-	fn(T_Input{"-111", "111", "0", "-222", "-12321", "-1"})
-	fn(T_Input{"222", "-111", "111", "333", "-24642", "-2"})
-	fn(T_Input{"-222", "111", "-111", "-333", "-24642", "-2"})
-	fn(T_Input{"-222", "-111", "-333", "-111", "24642", "2"})
+	fn(Input{"111", "111", "222", "0", "12321", "1"})
+	fn(Input{"111", "-111", "0", "222", "-12321", "-1"})
+	fn(Input{"+111", "-111", "0", "222", "-12321", "-1"})
+	fn(Input{"-111", "111", "0", "-222", "-12321", "-1"})
+	fn(Input{"222", "-111", "111", "333", "-24642", "-2"})
+	fn(Input{"-222", "111", "-111", "-333", "-24642", "-2"})
+	fn(Input{"-222", "-111", "-333", "-111", "24642", "2"})
 
-	fn(T_Input{"0", "0", "0", "0", "0", "NaN34"})
-	fn(T_Input{"50", "0", "50", "50", "0", "Infinity"})
+	fn(Input{"0", "0", "0", "0", "0", "NaN34"})
+	fn(Input{"50", "0", "50", "50", "0", "Infinity"})
 
-	fn(T_Input{"111", "111", "222", "0", "12321", "1"})
-	fn(T_Input{"1", "9", "10", "-8", "9", "0.11111111111111111111"})
-	fn(T_Input{"12", "98", "110", "-86", "1176", "0.12244897959183673469"})
-	fn(T_Input{"12", "987", "999", "-975", "11844", "0.0121580547112462006"})
-	fn(T_Input{"12", "9876", "9888", "-9864", "118512", "0.00121506682867557715"})
-	fn(T_Input{"987", "123", "1110", "864", "121401", "8.02439024390243902439"})
-	fn(T_Input{"987", "12", "999", "975", "11844", "82.25"})
-	fn(T_Input{"987", "1", "988", "986", "987", "987"})
-	fn(T_Input{"123.123", "987.987", "1111.11", "-864.864", "121643.923401", "0.12462006079027355623"})
-	fn(T_Input{"123", "987.987", "1110.987", "-864.987", "121522.401", "0.12449556522504850772"})
-	fn(T_Input{"123.123", "987", "1110.123", "-863.877", "121522.401", "0.12474468085106382978"})
-	fn(T_Input{"987", "123.123", "1110.123", "863.877", "121522.401", "8.01637387003240661777"})
-	fn(T_Input{"987.987", "123", "1110.987", "864.987", "121522.401", "8.03241463414634146341"})
-	fn(T_Input{"123.987", "123", "246.987", "0.987", "15250.401", "1.00802439024390243902"})
-	fn(T_Input{"123", "0.987", "123.987", "122.013", "121.401", "124.620060790273556231"})
-	fn(T_Input{"123", "0.0987", "123.0987", "122.9013", "12.1401", "1246.20060790273556231003"})
-	fn(T_Input{"123", "0.00987", "123.00987", "122.99013", "1.21401", "12462.0060790273556231003"})
-	fn(T_Input{"123", "123.00987", "246.00987", "-0.00987", "15130.21401", "0.99991976253612819849"})
-	fn(T_Input{"0.00123", "0.00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
-	fn(T_Input{"0.00123", ".00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
-	fn(T_Input{".00123", "0.00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
-	fn(T_Input{".00123", ".00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
-	fn(T_Input{"0.1", "9", "9.1", "-8.9", "0.9", "0.01111111111111111111"})
-	fn(T_Input{"0.01", "9", "9.01", "-8.99", "0.09", "0.00111111111111111111"})
-	fn(T_Input{"0.001", "9", "9.001", "-8.999", "0.009", "0.00011111111111111111"})
-	fn(T_Input{"0.123", "123", "123.123", "-122.877", "15.129", "0.001"})
-	fn(T_Input{"123", "0.123", "123.123", "122.877", "15.129", "1000"})
+	fn(Input{"111", "111", "222", "0", "12321", "1"})
+	fn(Input{"1", "9", "10", "-8", "9", "0.11111111111111111111"})
+	fn(Input{"12", "98", "110", "-86", "1176", "0.12244897959183673469"})
+	fn(Input{"12", "987", "999", "-975", "11844", "0.0121580547112462006"})
+	fn(Input{"12", "9876", "9888", "-9864", "118512", "0.00121506682867557715"})
+	fn(Input{"987", "123", "1110", "864", "121401", "8.02439024390243902439"})
+	fn(Input{"987", "12", "999", "975", "11844", "82.25"})
+	fn(Input{"987", "1", "988", "986", "987", "987"})
+	fn(Input{"123.123", "987.987", "1111.11", "-864.864", "121643.923401", "0.12462006079027355623"})
+	fn(Input{"123", "987.987", "1110.987", "-864.987", "121522.401", "0.12449556522504850772"})
+	fn(Input{"123.123", "987", "1110.123", "-863.877", "121522.401", "0.12474468085106382978"})
+	fn(Input{"987", "123.123", "1110.123", "863.877", "121522.401", "8.01637387003240661777"})
+	fn(Input{"987.987", "123", "1110.987", "864.987", "121522.401", "8.03241463414634146341"})
+	fn(Input{"123.987", "123", "246.987", "0.987", "15250.401", "1.00802439024390243902"})
+	fn(Input{"123", "0.987", "123.987", "122.013", "121.401", "124.620060790273556231"})
+	fn(Input{"123", "0.0987", "123.0987", "122.9013", "12.1401", "1246.20060790273556231003"})
+	fn(Input{"123", "0.00987", "123.00987", "122.99013", "1.21401", "12462.0060790273556231003"})
+	fn(Input{"123", "123.00987", "246.00987", "-0.00987", "15130.21401", "0.99991976253612819849"})
+	fn(Input{"0.00123", "0.00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
+	fn(Input{"0.00123", ".00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
+	fn(Input{".00123", "0.00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
+	fn(Input{".00123", ".00987", "0.0111", "-0.00864", "0.0000121401", "0.12462006079027355623"})
+	fn(Input{"0.1", "9", "9.1", "-8.9", "0.9", "0.01111111111111111111"})
+	fn(Input{"0.01", "9", "9.01", "-8.99", "0.09", "0.00111111111111111111"})
+	fn(Input{"0.001", "9", "9.001", "-8.999", "0.009", "0.00011111111111111111"})
+	fn(Input{"0.123", "123", "123.123", "-122.877", "15.129", "0.001"})
+	fn(Input{"123", "0.123", "123.123", "122.877", "15.129", "1000"})
 
 }
 
 func Test_abs_neg(_t *testing.T) {
-	type T_Input struct {
-		sn_input         string
-		sn_expected__abs string
-		sn_expected__neg string
+	type Input struct {
+		input     string
+		expectAbs string
+		expectNeg string
 	}
 
-	fn := func(_t_input T_Input) {
-		s_output, err := AbsStr(_t_input.sn_input)
+	fn := func(input Input) {
+		output, err := AbsStr(input.input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
 		}
-		if s_output != _t_input.sn_expected__abs {
-			_t.Errorf("%s abs error | expected : %v, result : %v\n", _t_input.sn_input, _t_input.sn_expected__abs, s_output)
+		if output != input.expectAbs {
+			_t.Errorf("%s abs error | expected : %v, result : %v\n", input.input, input.expectAbs, output)
 		}
 
-		s_output, err = NegStr(_t_input.sn_input)
+		output, err = NegStr(input.input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
 		}
-		if s_output != _t_input.sn_expected__neg {
-			_t.Errorf("%s neg error | expected : %v, result : %v\n", _t_input.sn_input, _t_input.sn_expected__neg, s_output)
+		if output != input.expectNeg {
+			_t.Errorf("%s neg error | expected : %v, result : %v\n", input.input, input.expectNeg, output)
 		}
 	}
 
-	fn(T_Input{"1", "1", "-1"})
-	fn(T_Input{"-1", "1", "1"})
-	fn(T_Input{"0", "0", "0"})
-	fn(T_Input{"-0", "0", "0"})
-	fn(T_Input{"0.123456789", "0.123456789", "-0.123456789"})
-	fn(T_Input{"-0.123456789", "0.123456789", "0.123456789"})
-	fn(T_Input{"123456789.123456789", "123456789.123456789", "-123456789.123456789"})
-	fn(T_Input{"-123456789.123456789", "123456789.123456789", "123456789.123456789"})
+	fn(Input{"1", "1", "-1"})
+	fn(Input{"-1", "1", "1"})
+	fn(Input{"0", "0", "0"})
+	fn(Input{"-0", "0", "0"})
+	fn(Input{"0.123456789", "0.123456789", "-0.123456789"})
+	fn(Input{"-0.123456789", "0.123456789", "0.123456789"})
+	fn(Input{"123456789.123456789", "123456789.123456789", "-123456789.123456789"})
+	fn(Input{"-123456789.123456789", "123456789.123456789", "123456789.123456789"})
 }
 
 func Test_cmp(_t *testing.T) {
-	type T_Input struct {
-		sn_input_1  string
-		sn_input_2  string
-		sn_expected int
+	type Input struct {
+		inputA string
+		inputB string
+		expect int
 	}
 
-	fn := func(_t_input T_Input) {
-		n_cmp, err := CmpStr(_t_input.sn_input_1, _t_input.sn_input_2)
+	fn := func(input Input) {
+		cmp, err := CmpStr(input.inputA, input.inputB)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
 			return
 		}
-		if n_cmp != _t_input.sn_expected {
-			_t.Errorf("%s - %s cmp error | expected : %v, result : %v\n", _t_input.sn_input_1, _t_input.sn_input_2, _t_input.sn_expected, n_cmp)
+		if cmp != input.expect {
+			_t.Errorf("%s - %s cmp error | expected : %v, result : %v\n", input.inputA, input.inputB, input.expect, cmp)
 		}
 	}
 
 	// positive
 	{
-		fn(T_Input{"0.123", "123", -1})
-		fn(T_Input{"1.23", "23", -1})
-		fn(T_Input{"12.3", "123", -1})
+		fn(Input{"0.123", "123", -1})
+		fn(Input{"1.23", "23", -1})
+		fn(Input{"12.3", "123", -1})
 
-		fn(T_Input{"123", "0.123", 1})
-		fn(T_Input{"123", "1.23", 1})
-		fn(T_Input{"123", "12.3", 1})
+		fn(Input{"123", "0.123", 1})
+		fn(Input{"123", "1.23", 1})
+		fn(Input{"123", "12.3", 1})
 
-		fn(T_Input{"123", "123", 0})
-		fn(T_Input{"1230", "123", 1})
-		fn(T_Input{"12300", "123", 1})
-		fn(T_Input{"123", "1230", -1})
-		fn(T_Input{"123", "12300", -1})
+		fn(Input{"123", "123", 0})
+		fn(Input{"1230", "123", 1})
+		fn(Input{"12300", "123", 1})
+		fn(Input{"123", "1230", -1})
+		fn(Input{"123", "12300", -1})
 	}
 
 	// negative
 	{
-		fn(T_Input{"-0.123", "-123", 1})
-		fn(T_Input{"-1.23", "-23", 1})
-		fn(T_Input{"-12.3", "-123", 1})
+		fn(Input{"-0.123", "-123", 1})
+		fn(Input{"-1.23", "-23", 1})
+		fn(Input{"-12.3", "-123", 1})
 
-		fn(T_Input{"-123", "-0.123", -1})
-		fn(T_Input{"-123", "-1.23", -1})
-		fn(T_Input{"-123", "-12.3", -1})
+		fn(Input{"-123", "-0.123", -1})
+		fn(Input{"-123", "-1.23", -1})
+		fn(Input{"-123", "-12.3", -1})
 
-		fn(T_Input{"-123", "-123", 0})
-		fn(T_Input{"-1230", "-123", -1})
-		fn(T_Input{"-12300", "-123", -1})
-		fn(T_Input{"-123", "-1230", 1})
-		fn(T_Input{"-123", "-12300", 1})
+		fn(Input{"-123", "-123", 0})
+		fn(Input{"-1230", "-123", -1})
+		fn(Input{"-12300", "-123", -1})
+		fn(Input{"-123", "-1230", 1})
+		fn(Input{"-123", "-12300", 1})
 	}
 
 	// special case
 	{
-		fn(T_Input{"0", "-0", 0})
-		fn(T_Input{"0", "-0.0", 0})
-		fn(T_Input{"0.1", "-0.1", 1})
-		fn(T_Input{"0.01", "-0.1", 1})
-		fn(T_Input{"0.001", "-0.1", 1})
+		fn(Input{"0", "-0", 0})
+		fn(Input{"0", "-0.0", 0})
+		fn(Input{"0.1", "-0.1", 1})
+		fn(Input{"0.01", "-0.1", 1})
+		fn(Input{"0.001", "-0.1", 1})
 
-		fn(T_Input{"123.321", "123.3211", -1})
-		fn(T_Input{"123.321", "1233.21", -1})
-		fn(T_Input{"-123.321", "-123.3211", 1})
-		fn(T_Input{"-123.321", "-1233.21", 1})
+		fn(Input{"123.321", "123.3211", -1})
+		fn(Input{"123.321", "1233.21", -1})
+		fn(Input{"-123.321", "-123.3211", 1})
+		fn(Input{"-123.321", "-1233.21", 1})
 	}
 }
 
 func Test_round(_t *testing.T) {
-	type T_Input struct {
-		sn_input                string
-		n_round_cnt             int
-		sn_expected__round      string
-		sn_expected__round_down string
-		sn_expected__round_up   string
+	type Input struct {
+		input           string
+		roundCnt        int
+		expectRound     string
+		expectRoundDown string
+		expectRoundUp   string
 	}
 
-	fn := func(_t_input T_Input) {
-		pt_input := &Snum{}
-		pt_input.Init(0, 0)
+	fn := func(input Input) {
+		snum := &Snum{}
+		snum.Init(0, 0)
 
-		var sn_result__round, sn_result__round_down, sn_result__round_up string
+		var resRound, resRoundDown, resRoundUp string
 		{
-			err := pt_input.SetStr(_t_input.sn_input)
+			err := snum.SetStr(input.input)
 			if err != nil {
 				_t.Errorf("input string set error | err - %v", err)
 				return
 			}
-			pt_input_round := pt_input.Copy()
-			pt_input_round.Round(_t_input.n_round_cnt)
-			sn_result__round = pt_input_round.String()
+			inputRound := snum.Copy()
+			inputRound.Round(input.roundCnt)
+			resRound = inputRound.String()
 
-			pt_input_round_up := pt_input.Copy()
-			pt_input_round_up.RoundUp(_t_input.n_round_cnt)
-			sn_result__round_up = pt_input_round_up.String()
+			inputRoundUp := snum.Copy()
+			inputRoundUp.RoundUp(input.roundCnt)
+			resRoundUp = inputRoundUp.String()
 
-			pt_input_round_down := pt_input.Copy()
-			pt_input_round_down.RoundDown(_t_input.n_round_cnt)
-			sn_result__round_down = pt_input_round_down.String()
+			inputRoundDown := snum.Copy()
+			inputRoundDown.RoundDown(input.roundCnt)
+			resRoundDown = inputRoundDown.String()
 		}
-		if sn_result__round != _t_input.sn_expected__round {
-			_t.Errorf("%s - %d round error | expected : %v, result : %v\n", _t_input.sn_input, _t_input.n_round_cnt, _t_input.sn_expected__round, sn_result__round)
+		if resRound != input.expectRound {
+			_t.Errorf("%s - %d round error | expected : %v, result : %v\n", input.input, input.roundCnt, input.expectRound, resRound)
 		}
-		if sn_result__round_up != _t_input.sn_expected__round_up {
-			_t.Errorf("%s - %d round_up error | expected : %v, result : %v\n", _t_input.sn_input, _t_input.n_round_cnt, _t_input.sn_expected__round_up, sn_result__round_up)
+		if resRoundUp != input.expectRoundUp {
+			_t.Errorf("%s - %d round_up error | expected : %v, result : %v\n", input.input, input.roundCnt, input.expectRoundUp, resRoundUp)
 		}
-		if sn_result__round_down != _t_input.sn_expected__round_down {
-			_t.Errorf("%s - %d round_down error | expected : %v, result : %v\n", _t_input.sn_input, _t_input.n_round_cnt, _t_input.sn_expected__round_down, sn_result__round_down)
+		if resRoundDown != input.expectRoundDown {
+			_t.Errorf("%s - %d round_down error | expected : %v, result : %v\n", input.input, input.roundCnt, input.expectRoundDown, resRoundDown)
 		}
 	}
 
 	{
-		fn(T_Input{"123456789.123456789", 1, "100000000", "100000000", "200000000"})
-		fn(T_Input{"123456789.123456789", 2, "120000000", "120000000", "130000000"})
-		fn(T_Input{"123456789.123456789", 3, "123000000", "123000000", "124000000"})
-		fn(T_Input{"123456789.123456789", 4, "123500000", "123400000", "123500000"})
-		fn(T_Input{"123456789.123456789", 5, "123460000", "123450000", "123460000"})
-		fn(T_Input{"123456789.123456789", 6, "123457000", "123456000", "123457000"})
-		fn(T_Input{"123456789.123456789", 7, "123456800", "123456700", "123456800"})
-		fn(T_Input{"123456789.123456789", 8, "123456790", "123456780", "123456790"})
-		fn(T_Input{"123456789.123456789", 9, "123456789", "123456789", "123456790"})
-		fn(T_Input{"123456789.123456789", 10, "123456789.1", "123456789.1", "123456789.2"})
-		fn(T_Input{"123456789.123456789", 11, "123456789.12", "123456789.12", "123456789.13"})
-		fn(T_Input{"123456789.123456789", 12, "123456789.123", "123456789.123", "123456789.124"})
-		fn(T_Input{"123456789.123456789", 13, "123456789.1235", "123456789.1234", "123456789.1235"})
-		fn(T_Input{"123456789.123456789", 14, "123456789.12346", "123456789.12345", "123456789.12346"})
-		fn(T_Input{"123456789.123456789", 15, "123456789.123457", "123456789.123456", "123456789.123457"})
-		fn(T_Input{"123456789.123456789", 16, "123456789.1234568", "123456789.1234567", "123456789.1234568"})
-		fn(T_Input{"123456789.123456789", 17, "123456789.12345679", "123456789.12345678", "123456789.12345679"})
-		fn(T_Input{"123456789.123456789", 18, "123456789.123456789", "123456789.123456789", "123456789.123456789"})
+		fn(Input{"123456789.123456789", 1, "100000000", "100000000", "200000000"})
+		fn(Input{"123456789.123456789", 2, "120000000", "120000000", "130000000"})
+		fn(Input{"123456789.123456789", 3, "123000000", "123000000", "124000000"})
+		fn(Input{"123456789.123456789", 4, "123500000", "123400000", "123500000"})
+		fn(Input{"123456789.123456789", 5, "123460000", "123450000", "123460000"})
+		fn(Input{"123456789.123456789", 6, "123457000", "123456000", "123457000"})
+		fn(Input{"123456789.123456789", 7, "123456800", "123456700", "123456800"})
+		fn(Input{"123456789.123456789", 8, "123456790", "123456780", "123456790"})
+		fn(Input{"123456789.123456789", 9, "123456789", "123456789", "123456790"})
+		fn(Input{"123456789.123456789", 10, "123456789.1", "123456789.1", "123456789.2"})
+		fn(Input{"123456789.123456789", 11, "123456789.12", "123456789.12", "123456789.13"})
+		fn(Input{"123456789.123456789", 12, "123456789.123", "123456789.123", "123456789.124"})
+		fn(Input{"123456789.123456789", 13, "123456789.1235", "123456789.1234", "123456789.1235"})
+		fn(Input{"123456789.123456789", 14, "123456789.12346", "123456789.12345", "123456789.12346"})
+		fn(Input{"123456789.123456789", 15, "123456789.123457", "123456789.123456", "123456789.123457"})
+		fn(Input{"123456789.123456789", 16, "123456789.1234568", "123456789.1234567", "123456789.1234568"})
+		fn(Input{"123456789.123456789", 17, "123456789.12345679", "123456789.12345678", "123456789.12345679"})
+		fn(Input{"123456789.123456789", 18, "123456789.123456789", "123456789.123456789", "123456789.123456789"})
 
-		fn(T_Input{"0.123456789", 4, "0.1235", "0.1234", "0.1235"})
-		fn(T_Input{"0.023456789", 4, "0.02346", "0.02345", "0.02346"})
-		fn(T_Input{"0.003456789", 4, "0.003457", "0.003456", "0.003457"})
-		fn(T_Input{"0.000456789", 4, "0.0004568", "0.0004567", "0.0004568"})
-		fn(T_Input{"0.000056789", 4, "0.00005679", "0.00005678", "0.00005679"})
-		fn(T_Input{"0.000006789", 4, "0.000006789", "0.000006789", "0.000006789"})
-		fn(T_Input{"0.000000789", 4, "0.000000789", "0.000000789", "0.000000789"})
-		fn(T_Input{"0.000000089", 4, "0.000000089", "0.000000089", "0.000000089"})
-		fn(T_Input{"0.000000009", 4, "0.000000009", "0.000000009", "0.000000009"})
+		fn(Input{"0.123456789", 4, "0.1235", "0.1234", "0.1235"})
+		fn(Input{"0.023456789", 4, "0.02346", "0.02345", "0.02346"})
+		fn(Input{"0.003456789", 4, "0.003457", "0.003456", "0.003457"})
+		fn(Input{"0.000456789", 4, "0.0004568", "0.0004567", "0.0004568"})
+		fn(Input{"0.000056789", 4, "0.00005679", "0.00005678", "0.00005679"})
+		fn(Input{"0.000006789", 4, "0.000006789", "0.000006789", "0.000006789"})
+		fn(Input{"0.000000789", 4, "0.000000789", "0.000000789", "0.000000789"})
+		fn(Input{"0.000000089", 4, "0.000000089", "0.000000089", "0.000000089"})
+		fn(Input{"0.000000009", 4, "0.000000009", "0.000000009", "0.000000009"})
 	}
 }
 
 func Test_pow(_t *testing.T) {
-	sn_ret, err := Pow("2", 10)
+	ret, err := Pow("2", 10)
 	if err != nil {
 		_t.Fatal(err)
 	}
-	fmt.Println(sn_ret)
+	fmt.Println(ret)
 }
 
 func Test_scale_limit(_t *testing.T) {
-	fn_print := func(_n_precision int, _s_num string) {
-		pt_snum := &Snum{}
-		pt_snum.Init(_n_precision, 0)
+	fn_print := func(precision int, num string) {
+		snum := &Snum{}
+		snum.Init(precision, 0)
 
-		err := pt_snum.SetStr(_s_num)
+		err := snum.SetStr(num)
 		if err != nil {
 			_t.Fatal(err)
 		}
 
-		fmt.Println("입력 :", _s_num)
-		fmt.Println("출력 :", pt_snum.String())
-		fmt.Printf("소수부 길이 : %v | 정수부 길이 : %v | 정밀도 : %v \n", pt_snum.decimal.Scale(), pt_snum.decimal.Precision()-pt_snum.decimal.Scale(), pt_snum.decimal.Precision())
+		fmt.Println("입력 :", num)
+		fmt.Println("출력 :", snum.String())
+		fmt.Printf("소수부 길이 : %v | 정수부 길이 : %v | 정밀도 : %v \n", snum.decimal.Scale(), snum.decimal.Precision()-snum.decimal.Scale(), snum.decimal.Precision())
 		fmt.Println()
 		// pt_snum.pt_decimal.Context.MinScale
 

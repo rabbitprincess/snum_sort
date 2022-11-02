@@ -67,54 +67,54 @@ func (t *Encoder) Encode() (ret []byte, err error) {
 	return ret, nil
 }
 
-func (t *Encoder) Decode(_num []byte) (err error) {
-	if len(_num) < DEF_lenDataMinTotal {
+func (t *Encoder) Decode(arg []byte) (err error) {
+	if len(arg) < DEF_lenDataMinTotal {
 		return ErrHeaderNotEnough
 	}
 
 	// 헤더 정보 추출 - 부호 / 길이
-	var is_minus bool
-	var b1_len_header byte
+	var isMinus bool
+	var lenHeader byte
 	{
-		is_minus, b1_len_header = t.decodeHeader(_num[0])
+		isMinus, lenHeader = t.decodeHeader(arg[0])
 		// _bt_num 이 0 일 경우 처리
-		if len(_num) == 2 && _num[1] == 0 {
-			b1_len_header = byte(DEF_headerLenDecimal)
+		if len(arg) == 2 && arg[1] == 0 {
+			lenHeader = byte(DEF_headerLenDecimal)
 		}
 	}
 
 	// 데이터 추출 및 big int 설정
-	var s_raw string
-	var n_len__decimal int
+	var sRaw string
+	var lenDecimal int
 	{
-		bt_data := _num[1:]
+		data := arg[1:]
 		// 전처리 - 헤더에 따른 정보가 음수 일 경우
-		if is_minus == true {
+		if isMinus == true {
 			// 마지막 0xFF 분리
-			bt_data = bt_data[:len(bt_data)-1]
+			data = data[:len(data)-1]
 			// 비트 반전(데이터)
-			for i := 0; i < len(bt_data); i++ {
-				bt_data[i] = ^bt_data[i]
+			for i := 0; i < len(data); i++ {
+				data[i] = ^data[i]
 			}
 		}
 
 		// string 제작
-		for i := 0; i < len(bt_data); i++ {
-			b1_num__high_4bit := bt_data[i] >> 4
-			b1_num__low_4bit := bt_data[i] - (b1_num__high_4bit << 4)
-			s_raw += string('0' + b1_num__high_4bit)
-			s_raw += string('0' + b1_num__low_4bit)
+		for i := 0; i < len(data); i++ {
+			high4bit := data[i] >> 4
+			low4bit := data[i] - (high4bit << 4)
+			sRaw += string('0' + high4bit)
+			sRaw += string('0' + low4bit)
 		}
 
 		// n_len__decimal 추출
-		n_len__total := len(s_raw)
-		n_len__decimal = t.makeLenDecimal(n_len__total, b1_len_header)
+		lenTotal := len(sRaw)
+		lenDecimal = t.makeLenDecimal(lenTotal, lenHeader)
 	}
 
 	// snum 세팅 ( T_Snum 사용 )
 	{
-		big, _ := big.NewInt(0).SetString(s_raw, 10)
-		t.Snum.SetRaw(big, n_len__decimal, is_minus)
+		big, _ := big.NewInt(0).SetString(sRaw, 10)
+		t.Snum.SetRaw(big, lenDecimal, isMinus)
 	}
 	return nil
 }
@@ -122,38 +122,38 @@ func (t *Encoder) Decode(_num []byte) (err error) {
 //------------------------------------------------------------------------------------------//
 // util ( header )
 
-func (t *Encoder) decodeHeader(_header byte) (isMinus bool, lenStandard byte) {
-	if _header&DEF_headerBitMaskSign == 0 {
+func (t *Encoder) decodeHeader(header byte) (isMinus bool, lenStandard byte) {
+	if header&DEF_headerBitMaskSign == 0 {
 		// 부호(+-) 추출
 		isMinus = true
 		// 음수일 경우 헤더 보수처리
-		_header = ^_header
+		header = ^header
 	}
 
 	// 헤더에서 정수길이만 추출
-	lenStandard = _header & DEF_headerBitMaskStandardLen
+	lenStandard = header & DEF_headerBitMaskStandardLen
 
 	return isMinus, lenStandard
 }
 
-func (t *Encoder) makeLenDecimal(_len int, _lenStarndard byte) (lenDecimal int) {
+func (t *Encoder) makeLenDecimal(len int, lenStarndard byte) (lenDecimal int) {
 	// 소수 길이 추출
-	lenDecimal = _len - int(_lenStarndard) + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	lenDecimal = len - int(lenStarndard) + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
 	return lenDecimal
 }
 
-func (t *Encoder) makePosStartDot(_lenTotal int, _lenDecimal int) (posStartDot int) {
+func (t *Encoder) makePosStartDot(lenTotal int, lenDecimal int) (posStartDot int) {
 	// 소수점 시작 위치 추출
-	posStartDot = _lenTotal - _lenDecimal + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	posStartDot = lenTotal - lenDecimal + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
 	return posStartDot
 }
 
-func (t *Encoder) makeHeader(_posStartDot int, _isMinus bool) (header byte) {
+func (t *Encoder) makeHeader(posStartDot int, isMinus bool) (header byte) {
 	// 헤더 제작 - 제작시 양수로 가정하고 제작 후 -> 후 처리에서 음수를 반영
-	header = DEF_headerValueSignPlus | byte(_posStartDot)
+	header = DEF_headerValueSignPlus | byte(posStartDot)
 
 	// 음수의 경우 비트반전
-	if _isMinus == true {
+	if isMinus == true {
 		header = ^header
 	}
 	return header
