@@ -1,8 +1,10 @@
 # go-snum
  - golang string number utility
+ - Support sort including negative numbers and decimals
+ - Supports up to 96 integers and 32 decimal places
  - implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
-# size limit
+# max length
  - positive : 65 byte (header 1 bt + body 64 bt)
  - negative : 66 byte (header 1 bt + body 64 bt + 0xFF 1 bt)
 
