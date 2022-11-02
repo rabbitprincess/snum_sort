@@ -5,14 +5,9 @@ import (
 )
 
 /*
-	byte encoding 시 가능한 용량 한도
-		1. bt__sorted
-			1-1. 양수 : 65 byte (header 1 bt + body 64 bt)
-			1-2. 음수 : 66 byte (header 1 bt + body 64 bt + 0xFF 1 bt)
-
-		2. bt__unsorted
-			2-1. 양수 : 55 byte (header 1 bt + body 54 bt)
-			2-2. 음수 : 55 byte (header 1 bt + body 54 bt)
+	encoding 시 최대 용량 ( max 값일 경우 )
+		양수 : 55 byte (header 1 bt + body 54 bt)
+		음수 : 55 byte (header 1 bt + body 54 bt)
 */
 
 /*
@@ -38,7 +33,6 @@ import (
 	buf[1:]
 		- 정수 + 소수 big.Int 에 담아 2자릿수 당 1바이트 로 압축한 byte array
 		- 음수일 경우 보수로 저장
-
 */
 
 const (
@@ -49,7 +43,7 @@ const (
 	DEF_lenExtendDecimalForCalc int    = 20
 	DEF_base10                  int    = 10
 
-	DEF_lenDataMin      int = 1 // 숫자가 zero (0) 인 경우도 1 byte 를 사용 함 - big.int 스팩이 아니라 자체 스팩
+	DEF_lenDataMin      int = 1 // 숫자가 zero (0) 인 경우도 1 byte 사용
 	DEF_lenDataMinTotal int = DEF_headerSize + DEF_lenDataMin
 
 	DEF_headerSize               int  = 1
