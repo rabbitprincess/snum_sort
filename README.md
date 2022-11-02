@@ -1,5 +1,3 @@
-- 임시 - quantize 함수 추가 필요
-
 # go-snum
  - golang string number utility
  - implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
