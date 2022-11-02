@@ -1,4 +1,4 @@
-module github.com/gokch/snum
+module github.com/gokch/snum_sort
 
 go 1.17
 

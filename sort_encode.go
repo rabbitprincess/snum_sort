@@ -2,9 +2,6 @@ package snum
 
 import "math/big"
 
-//------------------------------------------------------------------------------------------//
-// binary - sorted
-
 type Encoder struct {
 	Snum
 }
@@ -14,7 +11,7 @@ func (t *Encoder) Init() {
 }
 
 func (t *Encoder) Encode() (ret []byte, err error) {
-	// 문자열 추출 ( T_Snum 사용 )
+	// 문자열 추출 ( Snum 사용 )
 	var raw string
 	var lenTotal int
 	var lenDecimal int
