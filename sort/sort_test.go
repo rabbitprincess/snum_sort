@@ -10,56 +10,41 @@ import (
 
 func Test__encode_decode(_t *testing.T) {
 	fn := func(input string, expect string) {
-		// 기대값 설정
-		{
-			// 기대값 입력이 비어있으면 입력값과 동일한 것이 정답인 것으로 인정한다.
-			if expect == "" {
-				expect = input
-			}
+		if expect == "" {
+			expect = input
 		}
 
 		// Byte_encode, Byte_decode
 		// string -> bigint -> binary -> bigint -> string
-		sorted := &Encoder{}
-		sorted.Init()
-		{
-			err := sorted.SetStr(input)
-			if err != nil {
-				_t.Errorf("Set__str\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
-				return
-			}
+		numSort := NewSnumSort(input)
 
-			bt_num, err := sorted.Encode()
-			if err != nil {
-				_t.Errorf("Decode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
-				return
-			}
+		enc, err := numSort.Encode()
+		if err != nil {
+			_t.Errorf("Decode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
+			return
+		}
 
-			// for debug
-			// fmt.Printf("%30s\n", fmt.Sprintf("%02x", bt_num))
+		err = numSort.Decode(enc)
+		if err != nil {
+			_t.Errorf("Encode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
+			return
+		}
 
-			err = sorted.Decode(bt_num)
-			if err != nil {
-				_t.Errorf("Encode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
-				return
-			}
+		recovery, err := numSort.GetStr()
+		if err != nil {
+			_t.Errorf("Get__str\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
+			return
+		}
 
-			recovery, err := sorted.GetStr()
-			if err != nil {
-				_t.Errorf("Get__str\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
-				return
-			}
-
-			if expect != recovery {
-				_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", expect, "s_num__recovery", recovery)
-				return
-			}
+		if expect != recovery {
+			_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", expect, "s_num__recovery", recovery)
+			return
 		}
 	}
 
 	// 0
 	{
-		fn("0", "")
+		fn("0", "0")
 		fn(".0", "0")
 		fn("0.0", "0")
 	}
@@ -181,43 +166,36 @@ func Test__encode_decode(_t *testing.T) {
 }
 
 func Test_encode__sort(_t *testing.T) {
-	type T_data struct {
-		snum  string
-		btnum []byte
+	type Input struct {
+		sn string
+		bt []byte
 	}
 
-	oris := make([]*T_data, 0, 100)
-	sorts := make([]*T_data, 0, 100)
+	oris := make([]*Input, 0, 100)
+	sorts := make([]*Input, 0, 100)
 
 	fn_input := func(snum string) {
-		var err error
-
-		sorted := &Encoder{}
-		sorted.Init()
-		sorted.SetStr(snum)
-		encode, err := sorted.Encode()
+		sorted := NewSnumSort(snum)
+		bt, err := sorted.Encode()
 		if err != nil {
 			_t.Errorf("input - %s | err - %v", snum, err)
 		}
 
-		pt_data := &T_data{
-			snum:  snum,
-			btnum: encode,
-		}
-		oris = append(oris, pt_data)
-		sorts = append(sorts, pt_data)
+		data := &Input{sn: snum, bt: bt}
+		oris = append(oris, data)
+		sorts = append(sorts, data)
 	}
 
-	fn_print := func() {
+	print := func() {
 		fmt.Printf("-----------------------------------------\n")
 		fmt.Printf("%10s - %10s - %s", "orignal", "sort", "[]byte(ori기준)\n")
 		for i := 0; i < len(oris); i++ {
-			fmt.Printf("%10s - %10s - %v\n", oris[i].snum, sorts[i].snum, oris[i].btnum)
+			fmt.Printf("%10s - %10s - %v\n", oris[i].sn, sorts[i].sn, oris[i].bt)
 		}
 		fmt.Printf("-----------------------------------------\n")
 	}
 
-	fn_errCheck := func() {
+	check := func() {
 		isExistErr := false
 		for i := 0; i < len(oris); i++ {
 			// 같지 않으면 에러 출력
@@ -227,12 +205,12 @@ func Test_encode__sort(_t *testing.T) {
 					_t.Errorf("%10s - %10s - %s", "orignal", "sort", "[]byte(ori기준)\n")
 				}
 				isExistErr = true
-				_t.Errorf("%10s - %10s %08b\n", oris[i].snum, sorts[i].snum, oris[i].btnum)
+				_t.Errorf("%10s - %10s %08b\n", oris[i].sn, sorts[i].sn, oris[i].bt)
 			}
 		}
 		if isExistErr == true {
 			_t.Errorf("-----------------------------------------\n")
-			fn_print()
+			print()
 		}
 	}
 	fn_input("-" + strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 음수 최소값
@@ -278,12 +256,13 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input(strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 양수 최대값
 
 	sort.SliceStable(sorts, func(i, j int) bool {
-		n_cmp := bytes.Compare(sorts[i].btnum, sorts[j].btnum)
-		if n_cmp == 1 {
+		cmp := bytes.Compare(sorts[i].bt, sorts[j].bt)
+		if cmp == 1 {
 			return false
 		}
 		return true
 	})
 
-	fn_errCheck()
+	check()
+	// print()
 }

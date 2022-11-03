@@ -6,15 +6,17 @@ import (
 	"github.com/gokch/snum_sort/snum"
 )
 
-type Encoder struct {
+func NewSnumSort[T *snum.Snum | int | int32 | int64 | uint | uint32 | uint64 | string | float32 | float64](num T) *SnumSort {
+	return &SnumSort{
+		Snum: *snum.NewSnum(num),
+	}
+}
+
+type SnumSort struct {
 	snum.Snum
 }
 
-func (t *Encoder) Init() {
-	t.Snum.Init()
-}
-
-func (t *Encoder) Encode() (ret []byte, err error) {
+func (t *SnumSort) Encode() (ret []byte, err error) {
 	// 문자열 추출 ( Snum 사용 )
 	var raw string
 	var lenTotal int
@@ -68,7 +70,7 @@ func (t *Encoder) Encode() (ret []byte, err error) {
 	return ret, nil
 }
 
-func (t *Encoder) Decode(arg []byte) (err error) {
+func (t *SnumSort) Decode(arg []byte) (err error) {
 	if len(arg) < DEF_lenDataMinTotal {
 		return ErrHeaderNotEnough
 	}
@@ -123,7 +125,7 @@ func (t *Encoder) Decode(arg []byte) (err error) {
 //------------------------------------------------------------------------------------------//
 // util ( header )
 
-func (t *Encoder) decodeHeader(header byte) (isMinus bool, lenStandard byte) {
+func (t *SnumSort) decodeHeader(header byte) (isMinus bool, lenStandard byte) {
 	if header&DEF_headerBitMaskSign == 0 {
 		// 부호(+-) 추출
 		isMinus = true
@@ -137,19 +139,19 @@ func (t *Encoder) decodeHeader(header byte) (isMinus bool, lenStandard byte) {
 	return isMinus, lenStandard
 }
 
-func (t *Encoder) makeLenDecimal(len int, lenStarndard byte) (lenDecimal int) {
+func (t *SnumSort) makeLenDecimal(len int, lenStarndard byte) (lenDecimal int) {
 	// 소수 길이 추출
 	lenDecimal = len - int(lenStarndard) + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
 	return lenDecimal
 }
 
-func (t *Encoder) makePosStartDot(lenTotal int, lenDecimal int) (posStartDot int) {
+func (t *SnumSort) makePosStartDot(lenTotal int, lenDecimal int) (posStartDot int) {
 	// 소수점 시작 위치 추출
 	posStartDot = lenTotal - lenDecimal + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
 	return posStartDot
 }
 
-func (t *Encoder) makeHeader(posStartDot int, isMinus bool) (header byte) {
+func (t *SnumSort) makeHeader(posStartDot int, isMinus bool) (header byte) {
 	// 헤더 제작 - 제작시 양수로 가정하고 제작 후 -> 후 처리에서 음수를 반영
 	header = DEF_headerValueSignPlus | byte(posStartDot)
 
