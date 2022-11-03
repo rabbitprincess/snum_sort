@@ -16,7 +16,7 @@ type SnumSort struct {
 	snum.Snum
 }
 
-func (t *SnumSort) Encode() (ret []byte, err error) {
+func (t *SnumSort) Encode() (enc []byte, err error) {
 	// 문자열 추출 ( Snum 사용 )
 	var raw string
 	var lenTotal int
@@ -64,14 +64,14 @@ func (t *SnumSort) Encode() (ret []byte, err error) {
 	}
 
 	// 헤더와 데이터를 합쳐 bt_ret 제작
-	ret = make([]byte, 0, DEF_headerSize+(lenTotal/2))
-	ret = append(ret, header)
-	ret = append(ret, numCompress...)
-	return ret, nil
+	enc = make([]byte, 0, DEF_headerSize+(lenTotal/2))
+	enc = append(enc, header)
+	enc = append(enc, numCompress...)
+	return enc, nil
 }
 
-func (t *SnumSort) Decode(arg []byte) (err error) {
-	if len(arg) < DEF_lenDataMinTotal {
+func (t *SnumSort) Decode(enc []byte) (err error) {
+	if len(enc) < DEF_lenDataMinTotal {
 		return ErrHeaderNotEnough
 	}
 
@@ -79,9 +79,9 @@ func (t *SnumSort) Decode(arg []byte) (err error) {
 	var isMinus bool
 	var lenHeader byte
 	{
-		isMinus, lenHeader = t.decodeHeader(arg[0])
+		isMinus, lenHeader = t.decodeHeader(enc[0])
 		// _bt_num 이 0 일 경우 처리
-		if len(arg) == 2 && arg[1] == 0 {
+		if len(enc) == 2 && enc[1] == 0 {
 			lenHeader = byte(DEF_headerLenDecimal)
 		}
 	}
@@ -90,7 +90,7 @@ func (t *SnumSort) Decode(arg []byte) (err error) {
 	var sRaw string
 	var lenDecimal int
 	{
-		data := arg[1:]
+		data := enc[1:]
 		// 전처리 - 헤더에 따른 정보가 음수 일 경우
 		if isMinus == true {
 			// 마지막 0xFF 분리
