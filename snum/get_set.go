@@ -29,7 +29,7 @@ func (t *Snum) GetUint64() (u8 uint64, err error) {
 
 func (t *Snum) SetUint64(u8 uint64) (err error) {
 	if t.decimal == nil {
-		t.Init(0, 0)
+		t.Init()
 	}
 	t.decimal.SetUint64(u8)
 
@@ -54,7 +54,7 @@ func (t *Snum) GetStr() (sn string, err error) {
 
 func (t *Snum) SetStr(sn string) (err error) {
 	if t.decimal == nil {
-		t.Init(0, 0)
+		t.Init()
 	}
 	_, is_valid := t.decimal.SetString(sn)
 	if is_valid != true {
@@ -86,7 +86,7 @@ func (t *Snum) GetRaw() (big *big.Int, lenDecimal int, isMinus bool) {
 
 func (t *Snum) SetRaw(big *big.Int, lenDecimal int, isMinus bool) {
 	if t.decimal == nil {
-		t.Init(0, 0) // 임시
+		t.Init() // 임시
 	}
 
 	t.decimal.SetBigMantScale(big, lenDecimal)
@@ -102,34 +102,31 @@ func (t *Snum) SetRaw(big *big.Int, lenDecimal int, isMinus bool) {
 
 func (t *Snum) SetZero() {
 	if t.decimal == nil {
-		t.Init(0, 0)
+		t.Init()
 	}
 	t.decimal.SetUint64(0)
 }
 
-func (t *Snum) TrimDigit() error {
+func (t *Snum) TrimDigit(_lenInteger, _lenDecimal int) error {
 	lenDecimal := t.decimal.Scale()
 	lenInteger := t.decimal.Precision() - t.decimal.Scale()
 
 	var errDecimal, errInteger error
 
 	// 후처리 - 소수
-	if lenDecimal > t.lenDecimal {
-		errDecimal = fmt.Errorf("Decimal limit exceeded | input : %d | limit : %d", lenDecimal, t.lenDecimal) // 에러 처리
-
-		t.decimal.Quantize(t.lenDecimal)
+	if lenDecimal > _lenDecimal {
+		errDecimal = fmt.Errorf("Decimal limit exceeded | input : %d | limit : %d", lenDecimal, _lenDecimal) // 에러 처리
+		t.decimal.Quantize(_lenDecimal)
 	}
 
 	// 후처리 - 정수
-	if lenInteger > t.lenStandard {
-		errInteger = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", lenInteger, t.lenStandard) // 에러 처리
+	if lenInteger > _lenInteger {
+		errInteger = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", lenInteger, _lenInteger) // 에러 처리
+		pt_snum := NewSnum(0)
 
-		pt_snum := &Snum{}
-		pt_snum.Init(0, 0)
 		pt_snum.decimal.SetUint64(10)
-		pt_snum.Pow(int64(t.lenStandard))
+		pt_snum.Pow(int64(_lenInteger))
 		lenDecimalBefore := t.decimal.Scale()
-
 		t.decimal.Rem(t.decimal, pt_snum.decimal)
 		t.decimal.SetScale(lenDecimalBefore)
 	}

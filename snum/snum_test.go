@@ -2,10 +2,33 @@ package snum
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 )
 
+func Test_snum(t *testing.T) {
+	{
+		var num int = -1
+		snum := NewSnum(num)
+		fmt.Println(snum.String())
+	}
+	{
+		var float float64 = -1.2345
+		snum := NewSnum(float)
+		fmt.Println(snum.String())
+	}
+	{
+		str := "1.2345"
+		snum := NewSnum(str)
+		fmt.Println(snum.String())
+	}
+	{
+		snum := NewSnum(1)
+		snum2 := NewSnum(snum)
+		fmt.Println(snum2.String())
+	}
+}
+
+/*
 func Test_trim(_t *testing.T) {
 	fn := func(input, expect string, lenInt, lenDecimal int) {
 		pt_snum := &Snum{}
@@ -55,7 +78,7 @@ func Test_set_get(_t *testing.T) {
 		// String_set, String_get
 		// string -> bigint -> string
 		pt_snum := &Snum{}
-		pt_snum.Init(0, 0)
+		pt_snum.Init()
 		{
 			err := pt_snum.SetStr(input)
 			if err != nil {
@@ -194,7 +217,7 @@ func Test_set_get(_t *testing.T) {
 func Test_copy(_t *testing.T) {
 	fn := func(input string) {
 		snOri := &Snum{}
-		snOri.Init(0, 0)
+		snOri.Init()
 		err := snOri.SetStr(input)
 		if err != nil {
 			_t.Errorf("input string set error | err - %v", err)
@@ -207,7 +230,7 @@ func Test_copy(_t *testing.T) {
 		}
 
 		snCopy := &Snum{}
-		snCopy.Init(0, 0)
+		snCopy.Init()
 		snCopy.decimal.Copy(snOri.decimal)
 		sCopy, err := snCopy.GetStr()
 		if err != nil {
@@ -451,7 +474,7 @@ func Test_round(_t *testing.T) {
 
 	fn := func(input Input) {
 		snum := &Snum{}
-		snum.Init(0, 0)
+		snum.Init()
 
 		var resRound, resRoundDown, resRoundUp string
 		{
@@ -557,3 +580,4 @@ func Test_scale_limit(_t *testing.T) {
 	fn_print(128, strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal))
 
 }
+*/

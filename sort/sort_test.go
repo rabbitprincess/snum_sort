@@ -1,4 +1,4 @@
-package snum
+package sort
 
 import (
 	"bytes"

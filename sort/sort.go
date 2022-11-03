@@ -1,13 +1,17 @@
-package snum
+package sort
 
-import "math/big"
+import (
+	"math/big"
+
+	"github.com/gokch/snum_sort/snum"
+)
 
 type Encoder struct {
-	Snum
+	snum.Snum
 }
 
 func (t *Encoder) Init() {
-	t.Snum.Init(DEF_headerLenInteger, DEF_headerLenDecimal)
+	t.Snum.Init()
 }
 
 func (t *Encoder) Encode() (ret []byte, err error) {
