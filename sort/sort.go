@@ -1,6 +1,7 @@
 package sort
 
 import (
+	"errors"
 	"math/big"
 
 	"github.com/gokch/snum_sort/snum"
@@ -29,7 +30,7 @@ func (t *SnumSort) Encode() (enc []byte, err error) {
 
 		// s_num 이 0일 경우 후처리
 		if raw == "0" {
-			lenDecimal = DEF_headerLenDecimal
+			lenDecimal = DEF_digitDecimalMax
 		}
 		lenTotal = len(raw)
 	}
@@ -64,15 +65,15 @@ func (t *SnumSort) Encode() (enc []byte, err error) {
 	}
 
 	// 헤더와 데이터를 합쳐 bt_ret 제작
-	enc = make([]byte, 0, DEF_headerSize+(lenTotal/2))
+	enc = make([]byte, 0, DEF_lenHeader+(lenTotal/2))
 	enc = append(enc, header)
 	enc = append(enc, numCompress...)
 	return enc, nil
 }
 
 func (t *SnumSort) Decode(enc []byte) (err error) {
-	if len(enc) < DEF_lenDataMinTotal {
-		return ErrHeaderNotEnough
+	if len(enc) < DEF_lenTotalMin {
+		return errors.New("too short")
 	}
 
 	// 헤더 정보 추출 - 부호 / 길이
@@ -82,7 +83,7 @@ func (t *SnumSort) Decode(enc []byte) (err error) {
 		isMinus, lenHeader = t.decodeHeader(enc[0])
 		// _bt_num 이 0 일 경우 처리
 		if len(enc) == 2 && enc[1] == 0 {
-			lenHeader = byte(DEF_headerLenDecimal)
+			lenHeader = byte(DEF_digitDecimalMax)
 		}
 	}
 
@@ -141,13 +142,13 @@ func (t *SnumSort) decodeHeader(header byte) (isMinus bool, lenStandard byte) {
 
 func (t *SnumSort) makeLenDecimal(len int, lenStarndard byte) (lenDecimal int) {
 	// 소수 길이 추출
-	lenDecimal = len - int(lenStarndard) + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	lenDecimal = len - int(lenStarndard) + DEF_digitDecimalMax - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
 	return lenDecimal
 }
 
 func (t *SnumSort) makePosStartDot(lenTotal int, lenDecimal int) (posStartDot int) {
 	// 소수점 시작 위치 추출
-	posStartDot = lenTotal - lenDecimal + DEF_headerLenDecimal - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
+	posStartDot = lenTotal - lenDecimal + DEF_digitDecimalMax - 1 // -1 이유 = 1의 자리가 0번 idx 지만 길이는 1의 자리가 len 1 이기 때문에 1 감소로 1의 자리를 0 번으로 맞춘다.
 	return posStartDot
 }
 

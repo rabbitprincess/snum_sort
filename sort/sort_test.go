@@ -20,24 +20,24 @@ func Test__encode_decode(_t *testing.T) {
 
 		enc, err := numSort.Encode()
 		if err != nil {
-			_t.Errorf("Decode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
+			_t.Error(err)
 			return
 		}
 
 		err = numSort.Decode(enc)
 		if err != nil {
-			_t.Errorf("Encode\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
+			_t.Error(err)
 			return
 		}
 
 		recovery, err := numSort.GetStr()
 		if err != nil {
-			_t.Errorf("Get__str\n%s:%v\n%s:%v\n", "_s_num__input", input, "err", err)
+			_t.Error(err)
 			return
 		}
 
 		if expect != recovery {
-			_t.Errorf("s_num__expected != s_num__recovery\n - %s : %v\n - %s : %v\n\n", "s_num__expected", expect, "s_num__recovery", recovery)
+			_t.Errorf("expect: %s, recovery: %s", expect, recovery)
 			return
 		}
 	}
@@ -96,13 +96,13 @@ func Test__encode_decode(_t *testing.T) {
 		// 자릿수 한도
 		{
 			// 정수는 96 자리 까지 ok
-			fn("1"+strings.Repeat("0", DEF_headerLenInteger-1), "")
-			fn(strings.Repeat("9", DEF_headerLenInteger), "")
+			fn("1"+strings.Repeat("0", DEF_digitIntegerMax-1), "")
+			fn(strings.Repeat("9", DEF_digitIntegerMax), "")
 			// 소수는 32 자리 까지 ok
-			fn("0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "")
+			fn("0."+strings.Repeat("0", DEF_digitDecimalMax-1)+"1", "")
 
 			// 양수 최대값
-			fn(strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "")
+			fn(strings.Repeat("9", DEF_digitIntegerMax)+"."+strings.Repeat("9", DEF_digitDecimalMax), "")
 		}
 	}
 
@@ -154,13 +154,13 @@ func Test__encode_decode(_t *testing.T) {
 		// 자릿수 한도
 		{
 			// 정수는 96 자리 까지 ok
-			fn("-1"+strings.Repeat("0", DEF_headerLenInteger-1), "")
-			fn("-"+strings.Repeat("9", DEF_headerLenInteger), "")
+			fn("-1"+strings.Repeat("0", DEF_digitIntegerMax-1), "")
+			fn("-"+strings.Repeat("9", DEF_digitIntegerMax), "")
 			// 소수는 32 자리 까지 ok
-			fn("-0."+strings.Repeat("0", DEF_headerLenDecimal-1)+"1", "")
+			fn("-0."+strings.Repeat("0", DEF_digitDecimalMax-1)+"1", "")
 
 			// 음수 최소값
-			fn("-"+strings.Repeat("9", DEF_headerLenInteger)+"."+strings.Repeat("9", DEF_headerLenDecimal), "")
+			fn("-"+strings.Repeat("9", DEF_digitIntegerMax)+"."+strings.Repeat("9", DEF_digitDecimalMax), "")
 		}
 	}
 }
@@ -213,8 +213,8 @@ func Test_encode__sort(_t *testing.T) {
 			print()
 		}
 	}
-	fn_input("-" + strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 음수 최소값
-	fn_input("-" + strings.Repeat("9", DEF_headerLenInteger))
+	fn_input("-" + strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 음수 최소값
+	fn_input("-" + strings.Repeat("9", DEF_digitIntegerMax))
 	fn_input("-10000")
 	fn_input("-9999")
 	fn_input("-1.2")
@@ -237,9 +237,9 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input("-0.1")
 	fn_input("-0.01")
 	fn_input("-0.001")
-	fn_input("-0." + strings.Repeat("0", DEF_headerLenDecimal-1) + "1") // 음수 최대값
+	fn_input("-0." + strings.Repeat("0", DEF_digitDecimalMax-1) + "1") // 음수 최대값
 	fn_input("0")
-	fn_input("0." + strings.Repeat("0", DEF_headerLenDecimal-1) + "1") // 양수 최소값
+	fn_input("0." + strings.Repeat("0", DEF_digitDecimalMax-1) + "1") // 양수 최소값
 	fn_input("0.001")
 	fn_input("0.01")
 	fn_input("0.1")
@@ -252,8 +252,8 @@ func Test_encode__sort(_t *testing.T) {
 	fn_input("9")
 	fn_input("9999")
 	fn_input("10000")
-	fn_input(strings.Repeat("9", DEF_headerLenInteger))
-	fn_input(strings.Repeat("9", DEF_headerLenInteger) + "." + strings.Repeat("9", DEF_headerLenDecimal)) // 양수 최대값
+	fn_input(strings.Repeat("9", DEF_digitIntegerMax))
+	fn_input(strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 양수 최대값
 
 	sort.SliceStable(sorts, func(i, j int) bool {
 		cmp := bytes.Compare(sorts[i].bt, sorts[j].bt)

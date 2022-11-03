@@ -1,9 +1,5 @@
 package sort
 
-import (
-	"errors"
-)
-
 /*
 	encoding 시 최대 용량 ( max 값일 경우 )
 		양수 : 55 byte (header 1 bt + body 54 bt)
@@ -36,28 +32,14 @@ import (
 */
 
 const (
-	DEF_dot                     string = "."
-	DEF_plus                    string = "+"
-	DEF_minus                   string = "-"
-	DEF_zero                    string = "0"
-	DEF_lenExtendDecimalForCalc int    = 20
-	DEF_base10                  int    = 10
+	DEF_lenHeader   int = 1
+	DEF_lenBodyMin  int = 1 // 숫자가 zero (0) 인 경우도 1 byte 사용
+	DEF_lenTotalMin int = DEF_lenHeader + DEF_lenBodyMin
 
-	DEF_lenDataMin      int = 1 // 숫자가 zero (0) 인 경우도 1 byte 사용
-	DEF_lenDataMinTotal int = DEF_headerSize + DEF_lenDataMin
+	DEF_digitIntegerMax int = 96
+	DEF_digitDecimalMax int = 32
 
-	DEF_headerSize               int  = 1
 	DEF_headerBitMaskSign        byte = 128 // 1000 0000
 	DEF_headerBitMaskStandardLen byte = 127 // 0111 1111
-	DEF_headerBitMask4bitHigh    byte = 240 // 1111 0000
-	DEF_headerBitMask4bitLow     byte = 15  // 0000 1111
 	DEF_headerValueSignPlus      byte = DEF_headerBitMaskSign
-	DEF_headerLenInteger         int  = 96
-	DEF_headerLenDecimal         int  = 32
-)
-
-var (
-	ErrNotNumber       error = errors.New("NaN")
-	ErrHeaderNotEnough error = errors.New("header not enough")
-	ErrDivByZero       error = errors.New("division by zero")
 )
