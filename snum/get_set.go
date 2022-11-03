@@ -107,25 +107,25 @@ func (t *Snum) SetZero() {
 	t.decimal.SetUint64(0)
 }
 
-func (t *Snum) TrimDigit(_lenInteger, _lenDecimal int) error {
-	lenDecimal := t.decimal.Scale()
-	lenInteger := t.decimal.Precision() - t.decimal.Scale()
+func (t *Snum) TrimDigit(lenInteger, lenDecimal int) error {
+	lenIntegerNow := t.decimal.Precision() - t.decimal.Scale()
+	lenDecimalNow := t.decimal.Scale()
 
 	var errDecimal, errInteger error
 
 	// 후처리 - 소수
-	if lenDecimal > _lenDecimal {
-		errDecimal = fmt.Errorf("Decimal limit exceeded | input : %d | limit : %d", lenDecimal, _lenDecimal) // 에러 처리
-		t.decimal.Quantize(_lenDecimal)
+	if lenDecimalNow > lenDecimal {
+		errDecimal = fmt.Errorf("Decimal limit exceeded | input : %d | limit : %d", lenDecimalNow, lenDecimal) // 에러 처리
+		t.decimal.Quantize(lenDecimal)
 	}
 
 	// 후처리 - 정수
-	if lenInteger > _lenInteger {
-		errInteger = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", lenInteger, _lenInteger) // 에러 처리
+	if lenIntegerNow > lenInteger {
+		errInteger = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", lenIntegerNow, lenInteger) // 에러 처리
 		pt_snum := NewSnum(0)
 
 		pt_snum.decimal.SetUint64(10)
-		pt_snum.Pow(int64(_lenInteger))
+		pt_snum.Pow(int64(lenInteger))
 		lenDecimalBefore := t.decimal.Scale()
 		t.decimal.Rem(t.decimal, pt_snum.decimal)
 		t.decimal.SetScale(lenDecimalBefore)
