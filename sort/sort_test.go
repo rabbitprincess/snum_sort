@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func Test__encode_decode(_t *testing.T) {
+func Test_encode_decode(_t *testing.T) {
 	fn := func(input string, expect string) {
 		if expect == "" {
 			expect = input
@@ -165,7 +165,7 @@ func Test__encode_decode(_t *testing.T) {
 	}
 }
 
-func Test_encode__sort(_t *testing.T) {
+func Test_sort(_t *testing.T) {
 	type Input struct {
 		sn string
 		bt []byte
