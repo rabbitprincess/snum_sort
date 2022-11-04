@@ -4,7 +4,11 @@ import (
 	"github.com/ericlagergren/decimal"
 )
 
-func NewSnum[T *Snum | int | int32 | int64 | uint | uint32 | uint64 | string | float32 | float64](num T) *Snum {
+type SnumConst interface {
+	*Snum | int | int32 | int64 | uint | uint32 | uint64 | string
+}
+
+func NewSnum[T SnumConst](num T) *Snum {
 	snum := &Snum{}
 	snum.Init()
 
@@ -40,20 +44,6 @@ func NewSnum[T *Snum | int | int32 | int64 | uint | uint32 | uint64 | string | f
 		snum.decimal.SetUint64(*data)
 	case *string:
 		snum.SetStr(*data)
-	case *float32:
-		if *data < 0 {
-			snum.decimal.SetFloat64(-float64(*data))
-			snum.decimal.Neg(snum.decimal)
-		} else {
-			snum.decimal.SetFloat64(float64(*data))
-		}
-	case *float64:
-		if *data < 0 {
-			snum.decimal.SetFloat64(-*data)
-			snum.decimal.Neg(snum.decimal)
-		} else {
-			snum.decimal.SetFloat64(*data)
-		}
 	}
 	return snum
 }

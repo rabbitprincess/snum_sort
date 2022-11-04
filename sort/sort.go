@@ -7,7 +7,7 @@ import (
 	"github.com/gokch/snum_sort/snum"
 )
 
-func NewSnumSort[T *snum.Snum | int | int32 | int64 | uint | uint32 | uint64 | string | float32 | float64](num T) *SnumSort {
+func NewSnumSort[T snum.SnumConst](num T) *SnumSort {
 	return &SnumSort{
 		Snum: *snum.NewSnum(num),
 	}
