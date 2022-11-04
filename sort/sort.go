@@ -45,11 +45,11 @@ func (t *SnumSort) Encode() (enc []byte, err error) {
 		numCompress = make([]byte, 0, lenTotal) // n_len / 2 + (n_len%2!=0)?1:0
 		numOri := []byte(raw)
 		for i := 0; i < lenTotal; i++ {
-			b1_one_num_bit := numOri[i] - byte('0')
+			b4 := numOri[i] - byte('0')
 			if i%2 == 0 {
-				numCompress = append(numCompress, b1_one_num_bit<<4)
+				numCompress = append(numCompress, b4<<4)
 			} else {
-				numCompress[i/2] += b1_one_num_bit
+				numCompress[i/2] += b4
 			}
 		}
 		// 부호가 음수(-) 일 경우 데이터 비트 반전

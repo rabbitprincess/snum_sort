@@ -20,8 +20,8 @@ func (t *Snum) GetUint64() (u8 uint64, err error) {
 		return 0, err
 	}
 
-	u8, is_valid := t.decimal.Uint64()
-	if is_valid != true {
+	u8, valid := t.decimal.Uint64()
+	if valid != true {
 		return 0, fmt.Errorf("Failed to convert to uint64 | %s", t.String())
 	}
 	return u8, nil
@@ -56,8 +56,8 @@ func (t *Snum) SetStr(sn string) (err error) {
 	if t.decimal == nil {
 		t.Init()
 	}
-	_, is_valid := t.decimal.SetString(sn)
-	if is_valid != true {
+	_, valid := t.decimal.SetString(sn)
+	if valid != true {
 		return fmt.Errorf("invalid number | %s", sn)
 	}
 
