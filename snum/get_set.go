@@ -32,7 +32,6 @@ func (t *Snum) SetUint64(u8 uint64) (err error) {
 		t.Init()
 	}
 	t.decimal.SetUint64(u8)
-
 	return nil
 }
 
@@ -60,7 +59,6 @@ func (t *Snum) SetStr(sn string) (err error) {
 	if valid != true {
 		return fmt.Errorf("invalid number | %s", sn)
 	}
-
 	return nil
 }
 

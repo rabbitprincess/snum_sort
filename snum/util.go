@@ -51,20 +51,20 @@ func (t *Snum) Neg() {
 // -2.1         -2              -2            -3
 // -2.5         -3              -2            -3
 // -2.6         -3              -2            -3
-func (t *Snum) Round(stepSize int) {
+func (t *Snum) Round(step int) {
 	t.decimal.Context.RoundingMode = decimal.ToNearestAway
-	t.decimal.Round(stepSize)
+	t.decimal.Round(step)
 	t.decimal.Context.RoundingMode = decimal.ToZero // round_down 기준으로 복구
 }
 
-func (t *Snum) RoundDown(stepSize int) {
+func (t *Snum) RoundDown(step int) {
 	t.decimal.Context.RoundingMode = decimal.ToZero
-	t.decimal.Round(stepSize)
+	t.decimal.Round(step)
 }
 
-func (t *Snum) RoundUp(stepSize int) {
+func (t *Snum) RoundUp(step int) {
 	t.decimal.Context.RoundingMode = decimal.AwayFromZero
-	t.decimal.Round(stepSize)
+	t.decimal.Round(step)
 	t.decimal.Context.RoundingMode = decimal.ToZero // round_down 기준으로 복구
 }
 
@@ -74,7 +74,7 @@ func (t *Snum) Pow(num int64) {
 
 // Output:
 //
-//	x         step_size      GroupDown      Group_up
+//	x              step      GroupDown      Group_up
 //	123.321          -4         123.321       123.321
 //	123.321          -3         123.321       123.321
 //	123.321          -2         123.32        123.33
@@ -84,30 +84,30 @@ func (t *Snum) Pow(num int64) {
 //	123.321           2         100           200
 //	123.321           3         0             1000
 //	123.321           4         0             10000
-func (t *Snum) GroupDown(_stepSize int) {
+func (t *Snum) GroupDown(step int) {
 	lenDecimal := t.decimal.Scale()
 	lenInteger := t.decimal.Precision() - lenDecimal
 
-	if lenInteger <= _stepSize {
+	if lenInteger <= step {
 		// step_size 가 snum 자릿수를 초과할 경우 0 반환
 		t.decimal = decimal.New(0, 0)
 	} else {
 		t.decimal.Context.RoundingMode = decimal.ToZero
-		t.decimal.Quantize(-_stepSize)
+		t.decimal.Quantize(-step)
 	}
 }
 
-func (t *Snum) GroupUp(stepSize int) {
+func (t *Snum) GroupUp(step int) {
 	lenDecimal := t.decimal.Scale()
 	lenInteger := t.decimal.Precision() - lenDecimal
 
-	if lenInteger <= stepSize {
+	if lenInteger <= step {
 		// step_size 가 snum 자릿수를 초과할 경우 10^step_size 반환
 		t.decimal = decimal.New(10, 0)
-		t.Pow(int64(stepSize))
+		t.Pow(int64(step))
 	} else {
 		t.decimal.Context.RoundingMode = decimal.AwayFromZero
-		t.decimal.Quantize(-stepSize)
+		t.decimal.Quantize(-step)
 		t.decimal.Context.RoundingMode = decimal.ToZero
 	}
 }
