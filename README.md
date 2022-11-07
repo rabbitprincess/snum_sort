@@ -1,5 +1,6 @@
 # snum-sortable
  - Sortable decimal number utility
+ - No zero padding for alignment
  - Support bytes alignment including negative numbers and decimals
  - Supports up to 96 integers and 32 decimal places
  - implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
