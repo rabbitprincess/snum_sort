@@ -43,7 +43,10 @@ func NewSnum[T SnumConst](num T) *Snum {
 	case *uint64:
 		snum.decimal.SetUint64(*data)
 	case *string:
-		snum.SetStr(*data)
+		err := snum.SetStr(*data)
+		if err != nil {
+			return nil
+		}
 	}
 	return snum
 }
