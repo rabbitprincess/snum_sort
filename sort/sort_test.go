@@ -2,10 +2,11 @@ package sort
 
 import (
 	"bytes"
-	"fmt"
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func Test_encode_decode(_t *testing.T) {
@@ -167,101 +168,80 @@ func Test_encode_decode(_t *testing.T) {
 
 func Test_sort(_t *testing.T) {
 	type Input struct {
-		sn string
-		bt []byte
+		Sn string
+		Bt []byte
 	}
 
 	oris := make([]*Input, 0, 100)
-	sorts := make([]*Input, 0, 100)
+	checks := make([]*Input, 0, 100)
 
-	fn_input := func(snum string) {
+	input := func(snum string) {
 		sorted := NewSnumSort(snum)
 		bt, err := sorted.Encode()
 		if err != nil {
 			_t.Errorf("input - %s | err - %v", snum, err)
 		}
 
-		data := &Input{sn: snum, bt: bt}
+		data := &Input{Sn: snum, Bt: bt}
 		oris = append(oris, data)
-		sorts = append(sorts, data)
-	}
-
-	print := func() {
-		fmt.Printf("-----------------------------------------\n")
-		fmt.Printf("%10s - %10s - %s", "orignal", "sort", "[]byte(ori기준)\n")
-		for i := 0; i < len(oris); i++ {
-			fmt.Printf("%10s - %10s - %v\n", oris[i].sn, sorts[i].sn, oris[i].bt)
-		}
-		fmt.Printf("-----------------------------------------\n")
+		checks = append(checks, data)
 	}
 
 	check := func() {
-		isExistErr := false
-		for i := 0; i < len(oris); i++ {
-			// 같지 않으면 에러 출력
-			if oris[i] != sorts[i] {
-				if isExistErr == false {
-					_t.Errorf("-----------------------------------------\n")
-					_t.Errorf("%10s - %10s - %s", "orignal", "sort", "[]byte(ori기준)\n")
-				}
-				isExistErr = true
-				_t.Errorf("%10s - %10s %08b\n", oris[i].sn, sorts[i].sn, oris[i].bt)
+		// sort checks
+		sort.SliceStable(checks, func(i, j int) bool {
+			cmp := bytes.Compare(checks[i].Bt, checks[j].Bt)
+			if cmp == 1 {
+				return true
 			}
-		}
-		if isExistErr == true {
-			_t.Errorf("-----------------------------------------\n")
-			print()
+			return false
+		})
+		// cmp ori and sorts
+		if cmp.Diff(oris, checks) != "" {
+			_t.Errorf("err - oris != sorts\n%s", cmp.Diff(oris, checks))
 		}
 	}
-	fn_input("-" + strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 음수 최소값
-	fn_input("-" + strings.Repeat("9", DEF_digitIntegerMax))
-	fn_input("-10000")
-	fn_input("-9999")
-	fn_input("-1.2")
-	fn_input("-1.199999")
-	fn_input("-1.19")
-	fn_input("-1.1899")
-	fn_input("-1.189")
-	fn_input("-1.1112")
-	fn_input("-1.11111")
-	fn_input("-1.111109")
-	fn_input("-1.1111")
-	fn_input("-1.111")
-	fn_input("-1.11")
-	fn_input("-1.1")
-	fn_input("-1.0901")
-	fn_input("-1.09")
-	fn_input("-1.089")
-	fn_input("-1")
-	fn_input("-0.9")
-	fn_input("-0.1")
-	fn_input("-0.01")
-	fn_input("-0.001")
-	fn_input("-0." + strings.Repeat("0", DEF_digitDecimalMax-1) + "1") // 음수 최대값
-	fn_input("0")
-	fn_input("0." + strings.Repeat("0", DEF_digitDecimalMax-1) + "1") // 양수 최소값
-	fn_input("0.001")
-	fn_input("0.01")
-	fn_input("0.1")
-	fn_input("0.9")
-	fn_input("1")
-	fn_input("1.09")
-	fn_input("1.1")
-	fn_input("1.11")
-	fn_input("1.19")
-	fn_input("9")
-	fn_input("9999")
-	fn_input("10000")
-	fn_input(strings.Repeat("9", DEF_digitIntegerMax))
-	fn_input(strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 양수 최대값
-
-	sort.SliceStable(sorts, func(i, j int) bool {
-		cmp := bytes.Compare(sorts[i].bt, sorts[j].bt)
-		if cmp == 1 {
-			return false
-		}
-		return true
-	})
+	input("-" + strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 음수 최소값
+	input("-" + strings.Repeat("9", DEF_digitIntegerMax))
+	input("-10000")
+	input("-9999")
+	input("-1.2")
+	input("-1.199999")
+	input("-1.19")
+	input("-1.1899")
+	input("-1.189")
+	input("-1.1112")
+	input("-1.11111")
+	input("-1.111109")
+	input("-1.1111")
+	input("-1.111")
+	input("-1.11")
+	input("-1.1")
+	input("-1.0901")
+	input("-1.09")
+	input("-1.089")
+	input("-1")
+	input("-0.9")
+	input("-0.1")
+	input("-0.01")
+	input("-0.001")
+	input("-0." + strings.Repeat("0", DEF_digitDecimalMax-1) + "1") // 음수 최대값
+	input("0")
+	input("0." + strings.Repeat("0", DEF_digitDecimalMax-1) + "1") // 양수 최소값
+	input("0.001")
+	input("0.01")
+	input("0.1")
+	input("0.9")
+	input("1")
+	input("1.09")
+	input("1.1")
+	input("1.11")
+	input("1.19")
+	input("9")
+	input("9999")
+	input("10000")
+	input(strings.Repeat("9", DEF_digitIntegerMax))
+	input(strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 양수 최대값
 
 	check()
 	// print()
