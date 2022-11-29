@@ -52,14 +52,13 @@ func (t *SnumSort) Decode(enc []byte) (err error) {
 // util
 
 func encodeHeader(lenRaw, lenDecimal int) (header byte) {
-	// 소수점 시작 위치 추출 ( 자릿수는 1번이 0번 idx 지만 길이는 1의 자리가 1 이기 때문에 1 감소 필요 )
 	posStartDot := lenRaw - lenDecimal + DEF_digitDecimalMax - 1
-	header = DEF_headerBitMaskSign | byte(posStartDot)
+	header = byte(posStartDot) | DEF_headerBitMaskSign
 	return header
 }
 
 func encodeBody(raw string) (body []byte) {
-	body = make([]byte, 0, len(raw)) // len / 2 + (len%2!=0)?1:0
+	body = make([]byte, 0, len(raw)/2+1)
 	numOri := []byte(raw)
 	for i := 0; i < len(raw); i++ {
 		b4 := numOri[i] - byte('0')
@@ -72,25 +71,25 @@ func encodeBody(raw string) (body []byte) {
 	return body
 }
 
-func encodeMinus(isMinus bool, enc []byte) []byte {
+func encodeMinus(isMinus bool, standard []byte) (minus []byte) {
 	if isMinus == true {
-		for i := 0; i < len(enc); i++ {
-			enc[i] = ^enc[i]
+		for i := 0; i < len(standard); i++ {
+			standard[i] = ^standard[i]
 		}
-		enc = append(enc, 0xFF) // append last 0xFF
+		standard = append(standard, 0xFF) // append last 0xFF
 	}
-	return enc
+	return standard
 }
 
-func decodeMinus(enc []byte) (isMinus bool, dec []byte) {
-	if enc[0]&DEF_headerBitMaskSign == 0 {
-		enc = enc[:len(enc)-1] // separate last 0xFF
-		for i := 0; i < len(enc); i++ {
-			enc[i] = ^enc[i]
+func decodeMinus(minus []byte) (isMinus bool, standard []byte) {
+	if minus[0]&DEF_headerBitMaskSign == 0 {
+		minus = minus[:len(minus)-1] // separate last 0xFF
+		for i := 0; i < len(minus); i++ {
+			minus[i] = ^minus[i]
 		}
-		return true, enc
+		isMinus = true
 	}
-	return false, enc
+	return isMinus, minus
 }
 
 func decodeBody(isMinus bool, body []byte) (raw string) {
