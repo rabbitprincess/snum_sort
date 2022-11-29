@@ -6,41 +6,28 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/require"
 )
 
-func Test_encode_decode(_t *testing.T) {
+// Byte_encode, Byte_decode
+// string -> bigint -> binary -> bigint -> string
+func TestSort_encode_decode(t *testing.T) {
 	fn := func(input string, expect string) {
 		if expect == "" {
 			expect = input
 		}
-
-		// Byte_encode, Byte_decode
-		// string -> bigint -> binary -> bigint -> string
 		numSort := NewSnumSort(input)
 
 		enc, err := numSort.Encode()
-		if err != nil {
-			_t.Error(err)
-			return
-		}
+		require.NoError(t, err)
 
 		err = numSort.Decode(enc)
-		if err != nil {
-			_t.Error(err)
-			return
-		}
+		require.NoError(t, err)
 
 		recovery, err := numSort.GetStr()
-		if err != nil {
-			_t.Error(err)
-			return
-		}
+		require.NoError(t, err)
 
-		if expect != recovery {
-			_t.Errorf("expect: %s, recovery: %s", expect, recovery)
-			return
-		}
+		require.Equalf(t, expect, recovery, "input - %s", input)
 	}
 
 	// 0
@@ -166,40 +153,36 @@ func Test_encode_decode(_t *testing.T) {
 	}
 }
 
-func Test_sort(_t *testing.T) {
+func Test_sort(t *testing.T) {
 	type Input struct {
-		Sn string
-		Bt []byte
+		snum   string
+		encode []byte
 	}
 
 	oris := make([]*Input, 0, 100)
-	checks := make([]*Input, 0, 100)
+	sorts := make([]*Input, 0, 100)
 
 	input := func(snum string) {
 		sorted := NewSnumSort(snum)
 		bt, err := sorted.Encode()
-		if err != nil {
-			_t.Errorf("input - %s | err - %v", snum, err)
-		}
+		require.NoError(t, err)
 
-		data := &Input{Sn: snum, Bt: bt}
+		data := &Input{snum: snum, encode: bt}
 		oris = append(oris, data)
-		checks = append(checks, data)
+		sorts = append(sorts, data)
 	}
 
-	check := func() {
+	sort := func() {
 		// sort checks
-		sort.SliceStable(checks, func(i, j int) bool {
-			cmp := bytes.Compare(checks[i].Bt, checks[j].Bt)
-			if cmp == 1 {
+		sort.SliceStable(sorts, func(i, j int) bool {
+			cmp := bytes.Compare(sorts[i].encode, sorts[j].encode)
+			if cmp < 0 {
 				return true
 			}
 			return false
 		})
 		// cmp ori and sorts
-		if cmp.Diff(oris, checks) != "" {
-			_t.Errorf("err - oris != sorts\n%s", cmp.Diff(oris, checks))
-		}
+		require.EqualValues(t, oris, sorts)
 	}
 	input("-" + strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 음수 최소값
 	input("-" + strings.Repeat("9", DEF_digitIntegerMax))
@@ -243,6 +226,6 @@ func Test_sort(_t *testing.T) {
 	input(strings.Repeat("9", DEF_digitIntegerMax))
 	input(strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax)) // 양수 최대값
 
-	check()
+	sort()
 	// print()
 }

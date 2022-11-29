@@ -18,21 +18,20 @@ type SnumSort struct {
 }
 
 func (t *SnumSort) Encode() (enc []byte, err error) {
-	// 문자열 추출
-	var bigRaw *big.Int
+	// get raw
 	bigRaw, lenDecimal, isMinus := t.Snum.GetRaw()
 	raw := bigRaw.String()
-	if raw == "0" { // s_num 이 0일 경우 후처리
+	if raw == "0" { // 0 일 경우 전처리
 		lenDecimal = DEF_digitDecimalMax
 	}
 	lenTotal := len(raw)
 
-	// 헤더 제작
+	// make header
 	posStartDot := t.makePosStartDot(lenTotal, lenDecimal)
-	header := t.encodeHeader(posStartDot, isMinus)
+	header := t.encodeHeader(posStartDot)
 
-	// 데이터 제작
-	dataCompress := make([]byte, 0, lenTotal) // n_len / 2 + (n_len%2!=0)?1:0
+	// make body
+	dataCompress := make([]byte, 0, lenTotal) // len / 2 + (len%2!=0)?1:0
 	numOri := []byte(raw)
 	for i := 0; i < lenTotal; i++ {
 		b4 := numOri[i] - byte('0')
@@ -42,18 +41,18 @@ func (t *SnumSort) Encode() (enc []byte, err error) {
 			dataCompress[i/2] += b4
 		}
 	}
-	// 부호가 음수(-) 일 경우 데이터 비트 반전
+	// if minus, reverse bit
 	if isMinus == true {
+		header = ^header
 		lenData := len(dataCompress)
 		for i := 0; i < lenData; i++ {
-			dataCompress[i] = ^dataCompress[i] // 비트 반전
+			dataCompress[i] = ^dataCompress[i]
 		}
 
-		// 음수의 경우 무조건 끝에 역정렬 알고리즘을 위한 비교마감(cut) 수치 0xFF 를 넣는다.
-		dataCompress = append(dataCompress, 0xFF)
+		dataCompress = append(dataCompress, 0xFF) // append last 0xFF
 	}
 
-	// 헤더와 데이터를 합쳐 bt_ret 제작
+	// make enc
 	enc = make([]byte, 0, DEF_lenHeader+(lenTotal/2))
 	enc = append(enc, header)
 	enc = append(enc, dataCompress...)
@@ -65,26 +64,22 @@ func (t *SnumSort) Decode(enc []byte) (err error) {
 		return errors.New("too short")
 	}
 
-	// 헤더 정보 추출 - 부호 / 길이
+	// Decode header info
 	isMinus, lenHeader := t.decodeHeader(enc[0])
-	if len(enc) == 2 && enc[1] == 0 { // _bt_num 이 0 일 경우 후처리
+	if len(enc) == 2 && enc[1] == 0 { // 0 일 경우 후처리
 		lenHeader = byte(DEF_digitDecimalMax)
 	}
 
-	// 데이터 추출 및 big int 설정
-	var sRaw string
 	data := enc[1:]
-	// 전처리 - 헤더에 따른 정보가 음수 일 경우
 	if isMinus == true {
-		// 마지막 0xFF 분리
-		data = data[:len(data)-1]
-		// 비트 반전(데이터)
-		for i := 0; i < len(data); i++ {
+		data = data[:len(data)-1]        // separate last 0xFF
+		for i := 0; i < len(data); i++ { // reverse bit
 			data[i] = ^data[i]
 		}
 	}
 
-	// string 제작
+	// make string
+	var sRaw string
 	for i := 0; i < len(data); i++ {
 		high4bit := data[i] >> 4
 		low4bit := data[i] - (high4bit << 4)
@@ -92,11 +87,11 @@ func (t *SnumSort) Decode(enc []byte) (err error) {
 		sRaw += string('0' + low4bit)
 	}
 
-	// total, decimal len 추출
+	// set total, decimal len
 	lenTotal := len(sRaw)
 	lenDecimal := t.makeLenDecimal(lenTotal, lenHeader)
 
-	// snum 세팅
+	// set snum
 	big, _ := big.NewInt(0).SetString(sRaw, 10)
 	t.Snum.SetRaw(big, lenDecimal, isMinus)
 	return nil
@@ -109,7 +104,6 @@ func (t *SnumSort) decodeHeader(header byte) (isMinus bool, lenStandard byte) {
 	if header&DEF_headerBitMaskSign == 0 {
 		// 부호(+-) 추출
 		isMinus = true
-		// 음수일 경우 헤더 보수처리
 		header = ^header
 	}
 
@@ -131,13 +125,7 @@ func (t *SnumSort) makePosStartDot(lenTotal int, lenDecimal int) (posStartDot in
 	return posStartDot
 }
 
-func (t *SnumSort) encodeHeader(posStartDot int, isMinus bool) (header byte) {
-	// 헤더 제작 - 제작시 양수로 가정하고 제작 후 -> 후 처리에서 음수를 반영
-	header = DEF_headerValueSignPlus | byte(posStartDot)
-
-	// 음수의 경우 비트반전
-	if isMinus == true {
-		header = ^header
-	}
+func (t *SnumSort) encodeHeader(posStartDot int) (header byte) {
+	header = DEF_headerBitMaskSign | byte(posStartDot)
 	return header
 }

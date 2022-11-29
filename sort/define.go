@@ -10,5 +10,4 @@ const (
 
 	DEF_headerBitMaskSign        byte = 128 // 1000 0000
 	DEF_headerBitMaskStandardLen byte = 127 // 0111 1111
-	DEF_headerValueSignPlus      byte = DEF_headerBitMaskSign
 )
