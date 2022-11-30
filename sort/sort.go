@@ -36,7 +36,7 @@ func (t *SnumSort) Decode(enc []byte) (err error) {
 		return errors.New("too short")
 	}
 	isMinus, enc := decodeMinus(enc)
-	raw := decodeBody(isMinus, enc[1:])
+	raw := decodeBody(enc[1:])
 	lenDecimal := decodeHeader(len(raw), enc[0])
 
 	if len(enc) == 2 && enc[1] == 0 { // 0 일 경우 후처리
@@ -83,16 +83,16 @@ func encodeMinus(isMinus bool, standard []byte) (minus []byte) {
 
 func decodeMinus(minus []byte) (isMinus bool, standard []byte) {
 	if minus[0]&DEF_headerBitMaskSign == 0 {
+		isMinus = true
 		minus = minus[:len(minus)-1] // separate last 0xFF
 		for i := 0; i < len(minus); i++ {
 			minus[i] = ^minus[i]
 		}
-		isMinus = true
 	}
 	return isMinus, minus
 }
 
-func decodeBody(isMinus bool, body []byte) (raw string) {
+func decodeBody(body []byte) (raw string) {
 	for i := 0; i < len(body); i++ {
 		high4bit := body[i] >> 4
 		low4bit := body[i] - (high4bit << 4)
