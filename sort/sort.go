@@ -98,7 +98,7 @@ func decodeBody(body []byte) (raw string) {
 		low4bit := body[i] - (high4bit << 4)
 
 		raw += string(DEF_asciiZeroUnderOne + high4bit)
-		if low4bit != 0 {
+		if low4bit > 0 {
 			raw += string(DEF_asciiZeroUnderOne + low4bit)
 		}
 	}
