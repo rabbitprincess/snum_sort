@@ -61,7 +61,7 @@ func encodeBody(raw string) (body []byte) {
 	body = make([]byte, 0, len(raw)/2+1)
 	numOri := []byte(raw)
 	for i := 0; i < len(raw); i++ {
-		b4 := numOri[i] - byte('0')
+		b4 := numOri[i] - DEF_asciiZeroUnderOne
 		if i%2 == 0 {
 			body = append(body, b4<<4)
 		} else {
@@ -96,8 +96,11 @@ func decodeBody(body []byte) (raw string) {
 	for i := 0; i < len(body); i++ {
 		high4bit := body[i] >> 4
 		low4bit := body[i] - (high4bit << 4)
-		raw += string('0' + high4bit)
-		raw += string('0' + low4bit)
+
+		raw += string(DEF_asciiZeroUnderOne + high4bit)
+		if low4bit != 0 {
+			raw += string(DEF_asciiZeroUnderOne + low4bit)
+		}
 	}
 	return raw
 }

@@ -26,6 +26,14 @@ func TestSort_encode_decode(t *testing.T) {
 
 		require.Equal(t, input, recovery)
 	}
+	fn("-1")
+	fn("-1.1")
+	fn("-1.01")
+	fn("-1.001")
+	fn("-1.0001")
+	fn("-1.00001")
+	fn("-1.000001")
+	fn("-1.0000001")
 
 	// 0
 	fn("0")
@@ -157,6 +165,7 @@ func TestSort_encode_decode(t *testing.T) {
 		// 음수 최소값
 		fn("-" + strings.Repeat("9", DEF_digitIntegerMax) + "." + strings.Repeat("9", DEF_digitDecimalMax))
 	}
+
 }
 
 func Test_sort(t *testing.T) {
@@ -209,6 +218,8 @@ func Test_sort(t *testing.T) {
 	input("-1.0901")
 	input("-1.09")
 	input("-1.089")
+	input("-1.0001")
+	input("-1.0000000000000000001")
 	input("-1")
 	input("-0.9")
 	input("-0.1")
@@ -222,6 +233,8 @@ func Test_sort(t *testing.T) {
 	input("0.1")
 	input("0.9")
 	input("1")
+	input("1.0000000000000000000000000000001")
+	input("1.000000000000000000000000000001")
 	input("1.09")
 	input("1.1")
 	input("1.11")
