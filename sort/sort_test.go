@@ -26,6 +26,7 @@ func TestSort_encode_decode(t *testing.T) {
 
 		require.Equal(t, input, recovery)
 	}
+
 	fn("-1")
 	fn("-1.1")
 	fn("-1.01")
@@ -34,6 +35,10 @@ func TestSort_encode_decode(t *testing.T) {
 	fn("-1.00001")
 	fn("-1.000001")
 	fn("-1.0000001")
+	fn("-101")
+	fn("-2020")
+	fn("-30303030")
+	fn("-404040404")
 
 	// 0
 	fn("0")
@@ -47,6 +52,10 @@ func TestSort_encode_decode(t *testing.T) {
 	fn("123.123")
 	fn("12.3123")
 	fn("1.23123")
+	fn("101")
+	fn("2020")
+	fn("30303030")
+	fn("404040404")
 
 	// 1 미만
 	fn("0.1")
