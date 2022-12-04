@@ -1,6 +1,7 @@
 package sort
 
 import (
+	"bytes"
 	"encoding/hex"
 	"errors"
 
@@ -31,5 +32,10 @@ func (t *SnumSort) UnmarshalJSON(bt []byte) error {
 
 func (t *SnumSort) MarshalJSON() ([]byte, error) {
 	enc := t.Encode()
-	return []byte("\"" + hex.EncodeToString(enc) + "\""), nil
+
+	buf := bytes.NewBuffer(nil)
+	buf.WriteByte('"')
+	buf.WriteString(hex.EncodeToString(enc))
+	buf.WriteByte('"')
+	return buf.Bytes(), nil
 }
