@@ -38,17 +38,15 @@ func (t *Snum) SetUint64(u8 uint64) (err error) {
 //----------------------------------------------------------------------------------------//
 // str
 
-func (t *Snum) GetStr() (sn string, err error) {
+func (t *Snum) GetStr() (sn string) {
 	if t.decimal == nil {
-		return "", nil
+		return ""
 	}
-	err = t.decimal.Context.Err()
+	err := t.decimal.Context.Err()
 	if err != nil {
-		return "", err
+		return ""
 	}
-
-	sn = fmt.Sprintf("%f", t.decimal.Reduce())
-	return sn, nil
+	return fmt.Sprintf("%f", t.decimal.Reduce())
 }
 
 func (t *Snum) SetStr(sn string) (err error) {

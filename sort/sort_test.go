@@ -2,6 +2,8 @@ package sort
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -9,20 +11,43 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+type Test_str struct {
+	Snum string
+	Bt   []byte
+	Sn   *SnumSort
+}
+
+func Test_encode(t *testing.T) {
+	bt, err := json.MarshalIndent(
+		&Test_str{
+			Snum: "1.1",
+			Bt:   []byte{1, 2, 3, 4, 5, 6, 7, 8, 8, 31, 43, 54, 65, 76, 23, 14},
+			Sn:   NewSnumSort("1.1"),
+		}, "", "\t")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(string(bt))
+	}
+
+	test2 := &Test_str{}
+	err = json.Unmarshal(bt, test2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(test2)
+}
+
 // Byte_encode, Byte_decode
 // string -> bigint -> binary -> bigint -> string
 func TestSort_encode_decode(t *testing.T) {
 	fn := func(input string) {
 		numSort := NewSnumSort(input)
 
-		enc, err := numSort.Encode()
-		require.NoError(t, err)
+		enc := numSort.Encode()
+		numSort.Decode(enc)
 
-		err = numSort.Decode(enc)
-		require.NoError(t, err)
-
-		recovery, err := numSort.GetStr()
-		require.NoError(t, err)
+		recovery := numSort.GetStr()
 
 		require.Equal(t, input, recovery)
 	}
@@ -188,8 +213,7 @@ func Test_sort(t *testing.T) {
 
 	input := func(snum string) {
 		sorted := NewSnumSort(snum)
-		bt, err := sorted.Encode()
-		require.NoError(t, err)
+		bt := sorted.Encode()
 
 		data := &Input{snum: snum, encode: bt}
 		oris = append(oris, data)

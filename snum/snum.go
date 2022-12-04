@@ -77,11 +77,10 @@ func (t *Snum) UnmarshalJSON(bt []byte) error {
 }
 
 func (t *Snum) MarshalJSON() ([]byte, error) {
-	num, err := t.GetStr()
-	return []byte(num), err
+	num := t.GetStr()
+	return []byte(num), nil
 }
 
 func (t *Snum) String() string {
-	num, _ := t.GetStr()
-	return num
+	return t.GetStr()
 }
