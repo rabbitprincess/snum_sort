@@ -26,16 +26,13 @@ func (t *SnumSort) UnmarshalJSON(bt []byte) error {
 	if err != nil {
 		return err
 	}
-	t.Decode(enc)
-	return nil
+	return t.Decode(enc)
 }
 
 func (t *SnumSort) MarshalJSON() ([]byte, error) {
-	enc := t.Encode()
-
 	buf := bytes.NewBuffer(nil)
 	buf.WriteByte('"')
-	buf.WriteString(hex.EncodeToString(enc))
+	buf.WriteString(hex.EncodeToString(t.Encode()))
 	buf.WriteByte('"')
 	return buf.Bytes(), nil
 }

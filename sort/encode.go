@@ -1,6 +1,7 @@
 package sort
 
 import (
+	"fmt"
 	"math/big"
 )
 
@@ -18,10 +19,10 @@ func (t *SnumSort) Encode() (enc []byte) {
 	return enc
 }
 
-func (t *SnumSort) Decode(enc []byte) {
+func (t *SnumSort) Decode(enc []byte) error {
 	// Do not use any other value
 	if len(enc) < DEF_lenTotalMin {
-		panic("too short")
+		return fmt.Errorf("too short")
 	}
 	isMinus, enc := decodeMinus(enc)
 	raw := decodeBody(enc[1:])
@@ -33,6 +34,7 @@ func (t *SnumSort) Decode(enc []byte) {
 	bigRaw, _ := big.NewInt(0).SetString(raw, 10)
 
 	t.Snum.SetRaw(bigRaw, lenDecimal, isMinus)
+	return nil
 }
 
 //------------------------------------------------------------------------------------------//

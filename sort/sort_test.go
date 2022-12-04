@@ -3,11 +3,11 @@ package sort
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"sort"
 	"strings"
 	"testing"
 
+	"github.com/gokch/snum_sort/snum"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,25 +17,31 @@ type Test_str struct {
 	Sn   *SnumSort
 }
 
-func Test_encode(t *testing.T) {
-	bt, err := json.MarshalIndent(
-		&Test_str{
-			Snum: "1.1",
-			Bt:   []byte{1, 2, 3, 4, 5, 6, 7, 8, 8, 31, 43, 54, 65, 76, 23, 14},
-			Sn:   NewSnumSort("1.1"),
-		}, "", "\t")
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(string(bt))
+func Test_encode_decode(t *testing.T) {
+	fn_test := func(sn string) {
+		snumSort := NewSnumSort(snum.NewSnum(sn))
+
+		enc, err := json.MarshalIndent(&snumSort, "", "\t")
+		require.NoError(t, err)
+
+		snumSortNew := NewSnumSort(snum.NewSnum(0))
+		err = json.Unmarshal(enc, &snumSortNew)
+		require.NoError(t, err)
+
+		require.Equal(t, snumSort.String(), snumSortNew.String())
 	}
 
-	test2 := &Test_str{}
-	err = json.Unmarshal(bt, test2)
-	if err != nil {
-		t.Fatal(err)
-	}
-	fmt.Println(test2)
+	fn_test("0")
+	fn_test("1")
+	fn_test("1.1")
+	fn_test("1.2")
+	fn_test("10")
+	fn_test("11")
+	fn_test("-1")
+	fn_test("-1.1")
+	fn_test("-1.2")
+	fn_test("-10")
+	fn_test("-11")
 }
 
 // Byte_encode, Byte_decode
@@ -45,7 +51,8 @@ func TestSort_encode_decode(t *testing.T) {
 		numSort := NewSnumSort(input)
 
 		enc := numSort.Encode()
-		numSort.Decode(enc)
+		err := numSort.Decode(enc)
+		require.NoError(t, err)
 
 		recovery := numSort.GetStr()
 
