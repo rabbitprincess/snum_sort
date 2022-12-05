@@ -3,6 +3,7 @@ package sort
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -11,17 +12,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type Test_str struct {
-	Snum string
-	Bt   []byte
-	Sn   *SnumSort
-}
-
 func Test_encode_decode(t *testing.T) {
 	fn_test := func(sn string) {
 		snumSort := NewSnumSort(snum.NewSnum(sn))
 
 		enc, err := json.MarshalIndent(&snumSort, "", "\t")
+		fmt.Println(sn, string(enc))
 		require.NoError(t, err)
 
 		snumSortNew := NewSnumSort(snum.NewSnum(0))
@@ -32,6 +28,7 @@ func Test_encode_decode(t *testing.T) {
 	}
 
 	fn_test("11")
+	fn_test("10.00000000000000000000000000000001")
 	fn_test("10")
 	fn_test("1.2")
 	fn_test("1.1")
@@ -56,8 +53,12 @@ func Test_encode_decode(t *testing.T) {
 	fn_test("-0.123123")
 	fn_test("-1")
 	fn_test("-1.1")
+	fn_test("-1.11")
+	fn_test("-1.111")
+	fn_test("-1.1111")
 	fn_test("-1.2")
 	fn_test("-10")
+	fn_test("-10.00000000000000000000000000000001")
 	fn_test("-11")
 }
 
@@ -186,7 +187,6 @@ func TestSort_encode_decode(t *testing.T) {
 	fn("-1.000000000000000000000000000001")
 	fn("-1.0000000000000000000000000000001")
 	fn("-1.00000000000000000000000000000001")
-	fn("-1.01")
 	fn("-1.0123456789012345678")
 	fn("-1.01234567890123456789")
 	fn("-10.1234567890123456789")
@@ -265,6 +265,7 @@ func Test_sort(t *testing.T) {
 	input("-1.19")
 	input("-1.1899")
 	input("-1.189")
+	input("-1.1119")
 	input("-1.1112")
 	input("-1.11111")
 	input("-1.111109")

@@ -65,7 +65,9 @@ func encodeMinus(isMinus bool, standard []byte) (minus []byte) {
 		for i := 0; i < len(standard); i++ {
 			standard[i] = ^standard[i]
 		}
-		standard = append(standard, 0xFF) // append last 0xFF
+		if standard[len(standard)-1]<<4 != 0xF0 {
+			standard = append(standard, 0xF0) // append last 0xF0
+		}
 	}
 	return standard
 }
@@ -73,7 +75,9 @@ func encodeMinus(isMinus bool, standard []byte) (minus []byte) {
 func decodeMinus(minus []byte) (isMinus bool, standard []byte) {
 	if minus[0]&DEF_headerBitMaskSign == 0 {
 		isMinus = true
-		minus = minus[:len(minus)-1] // separate last 0xFF
+		if minus[len(minus)-1] == 0xF0 {
+			minus = minus[:len(minus)-1] // remove last 0xF0
+		}
 		for i := 0; i < len(minus); i++ {
 			minus[i] = ^minus[i]
 		}
