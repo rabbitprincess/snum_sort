@@ -1,7 +1,7 @@
 package sort
 
 import (
-	"fmt"
+	"errors"
 	"math/big"
 )
 
@@ -22,7 +22,7 @@ func (t *SnumSort) Encode() (enc []byte) {
 func (t *SnumSort) Decode(enc []byte) error {
 	// Do not use any other value
 	if len(enc) < DEF_lenTotalMin {
-		return fmt.Errorf("too short")
+		return errors.New("too short")
 	}
 	isMinus, enc := decodeMinus(enc)
 	raw := decodeBody(enc[1:])
