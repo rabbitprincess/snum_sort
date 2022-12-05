@@ -19,8 +19,8 @@ type SnumSort struct {
 }
 
 func (t *SnumSort) UnmarshalJSON(bt []byte) error {
-	if len(bt) < DEF_lenTotalMin+2 {
-		return errors.New("too short")
+	if len(bt) < DEF_lenTotalMin+2 || bt[0] != '"' || bt[len(bt)-1] != '"' {
+		return errors.New("invalid format")
 	}
 	enc, err := hex.DecodeString(string(bt[1 : len(bt)-1]))
 	if err != nil {

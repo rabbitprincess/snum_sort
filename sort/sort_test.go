@@ -12,67 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Test_encode_decode(t *testing.T) {
-	fn_test := func(sn string) {
-		snumSort := NewSnumSort(snum.NewSnum(sn))
-
-		enc, err := json.MarshalIndent(&snumSort, "", "\t")
-		fmt.Println(sn, string(enc))
-		require.NoError(t, err)
-
-		snumSortNew := NewSnumSort(snum.NewSnum(0))
-		err = json.Unmarshal(enc, &snumSortNew)
-		require.NoError(t, err)
-
-		require.Equal(t, snumSort.String(), snumSortNew.String())
-	}
-
-	fn_test("11")
-	fn_test("10.00000000000000000000000000000001")
-	fn_test("10")
-	fn_test("1.2")
-	fn_test("1.1")
-	fn_test("1")
-	fn_test("0.1")
-	fn_test("0.123123")
-	fn_test("0.0123123")
-	fn_test("0.00123123")
-	fn_test("0.000123123")
-	fn_test("0.000000000000000000000000000001")
-	fn_test("0.0000000000000000000000000000001")
-	fn_test("0.00000000000000000000000000099999")
-	fn_test("0.00000000000000000000000000009999")
-	fn_test("0.00000000000000000000000000000999")
-	fn_test("0.00000000000000000000000000000099")
-	fn_test("0.00000000000000000000000000000009")
-	fn_test("0.00000000000000000000000000000001")
-	fn_test("0")
-	fn_test("-0.00000000000000000000000000000001")
-	fn_test("-0.00000000000000000000000000000009")
-	fn_test("-0.00000000000000000000000000000099")
-	fn_test("-0.00000000000000000000000000000999")
-	fn_test("-0.00000000000000000000000000009999")
-	fn_test("-0.00000000000000000000000000099999")
-	fn_test("-0.0000000000000000000000000000001")
-	fn_test("-0.000000000000000000000000000001")
-	fn_test("-0.000123123")
-	fn_test("-0.00123123")
-	fn_test("-0.0123123")
-	fn_test("-0.1")
-	fn_test("-0.123123")
-	fn_test("-1")
-	fn_test("-1.1")
-	fn_test("-1.11")
-	fn_test("-1.111")
-	fn_test("-1.1111")
-	fn_test("-1.2")
-	fn_test("-10")
-	fn_test("-10.00000000000000000000000000000011")
-	fn_test("-10.00000000000000000000000000000010")
-	fn_test("-10.00000000000000000000000000000001")
-	fn_test("-11")
-}
-
 // Byte_encode, Byte_decode
 // string -> bigint -> binary -> bigint -> string
 func TestSort_encode_decode(t *testing.T) {
@@ -334,4 +273,65 @@ func TestSort_header(t *testing.T) {
 	fn(2, 1)    // "10.1"
 	fn(96, 0)   // 96 자리 정수
 	fn(128, 32) // 96 자리 정수 + 32 자리 소수
+}
+
+func TestSort_json(t *testing.T) {
+	fn_test := func(sn string) {
+		snumSort := NewSnumSort(snum.NewSnum(sn))
+
+		enc, err := json.MarshalIndent(&snumSort, "", "\t")
+		fmt.Println(sn, string(enc))
+		require.NoError(t, err)
+
+		snumSortNew := NewSnumSort(snum.NewSnum(0))
+		err = json.Unmarshal(enc, &snumSortNew)
+		require.NoError(t, err)
+
+		require.Equal(t, snumSort.String(), snumSortNew.String())
+	}
+
+	fn_test("11")
+	fn_test("10.00000000000000000000000000000001")
+	fn_test("10")
+	fn_test("1.2")
+	fn_test("1.1")
+	fn_test("1")
+	fn_test("0.1")
+	fn_test("0.123123")
+	fn_test("0.0123123")
+	fn_test("0.00123123")
+	fn_test("0.000123123")
+	fn_test("0.000000000000000000000000000001")
+	fn_test("0.0000000000000000000000000000001")
+	fn_test("0.00000000000000000000000000099999")
+	fn_test("0.00000000000000000000000000009999")
+	fn_test("0.00000000000000000000000000000999")
+	fn_test("0.00000000000000000000000000000099")
+	fn_test("0.00000000000000000000000000000009")
+	fn_test("0.00000000000000000000000000000001")
+	fn_test("0")
+	fn_test("-0.00000000000000000000000000000001")
+	fn_test("-0.00000000000000000000000000000009")
+	fn_test("-0.00000000000000000000000000000099")
+	fn_test("-0.00000000000000000000000000000999")
+	fn_test("-0.00000000000000000000000000009999")
+	fn_test("-0.00000000000000000000000000099999")
+	fn_test("-0.0000000000000000000000000000001")
+	fn_test("-0.000000000000000000000000000001")
+	fn_test("-0.000123123")
+	fn_test("-0.00123123")
+	fn_test("-0.0123123")
+	fn_test("-0.1")
+	fn_test("-0.123123")
+	fn_test("-1")
+	fn_test("-1.1")
+	fn_test("-1.11")
+	fn_test("-1.111")
+	fn_test("-1.1111")
+	fn_test("-1.2")
+	fn_test("-10")
+	fn_test("-10.00000000000000000000000000000011")
+	fn_test("-10.00000000000000000000000000000010")
+	fn_test("-10.00000000000000000000000000000001")
+	fn_test("-11")
 }
