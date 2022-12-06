@@ -31,7 +31,10 @@ func (t *SnumSort) Decode(enc []byte) error {
 	if len(enc) == 2 && enc[1] == 0 { // 0 일 경우 후처리
 		lenDecimal = 0
 	}
-	bigRaw, _ := big.NewInt(0).SetString(raw, 10)
+	bigRaw, valid := big.NewInt(0).SetString(raw, 10)
+	if valid != true {
+		return errors.New("invalid enc")
+	}
 
 	t.Snum.SetRaw(bigRaw, lenDecimal, isMinus)
 	return nil
