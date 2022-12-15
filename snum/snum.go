@@ -72,13 +72,11 @@ func (t *Snum) Copy() *Snum {
 }
 
 func (t *Snum) UnmarshalJSON(bt []byte) error {
-	err := t.SetStr(string(bt))
-	return err
+	return t.SetStr(string(bt))
 }
 
 func (t *Snum) MarshalJSON() ([]byte, error) {
-	num := t.GetStr()
-	return []byte(num), nil
+	return []byte(t.String()), nil
 }
 
 func (t *Snum) String() string {

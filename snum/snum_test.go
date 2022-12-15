@@ -7,6 +7,10 @@ import (
 
 func Test_snum(t *testing.T) {
 	{
+		snum := NewSnum(0)
+		fmt.Println(snum)
+	}
+	{
 		var num int = -1
 		snum := NewSnum(num)
 		fmt.Println(snum.String())
