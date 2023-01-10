@@ -25,6 +25,8 @@ func (t *Snum) IsZeroOver() bool {
 	return true
 }
 
+// Output:
+//
 // if( t  <  _pt ) -> -1
 // if( t  == _pt ) -> 0
 // if( t  >  _pt ) -> +1
@@ -42,15 +44,16 @@ func (t *Snum) Neg() {
 
 // Output:
 //
-//	  x      Round      Round_down      Round_up
-//	2.6          3               2             3
-//	2.5          3               2             3
-//	2.1          2               2             3
-//	2            2               2			   2
+//	  x         Round    Round_down      Round_up
+//	2.9             3             2             3
+//	2.5             2             2             3
+//	2.1             2             2             3
+//	2               2             2             2
 //
-// -2.1         -2              -2            -3
-// -2.5         -3              -2            -3
-// -2.6         -3              -2            -3
+// -2              -2            -2            -2
+// -2.1            -2            -2            -3
+// -2.5            -3            -2            -3
+// -2.9            -3            -2            -3
 func (t *Snum) Round(step int) {
 	t.decimal.Context.RoundingMode = decimal.ToNearestAway
 	t.decimal.Round(step)
@@ -74,16 +77,16 @@ func (t *Snum) Pow(num int64) {
 
 // Output:
 //
-//	x              step      GroupDown      Group_up
-//	123.321          -4         123.321       123.321
-//	123.321          -3         123.321       123.321
-//	123.321          -2         123.32        123.33
-//	123.321          -1         123.3         123.4
-//	123.321           0         123           124
-//	123.321           1         120           130
-//	123.321           2         100           200
-//	123.321           3         0             1000
-//	123.321           4         0             10000
+//	x             step       GroupDown      Group_up
+//	123.321         -4         123.321       123.321
+//	123.321         -3         123.321       123.321
+//	123.321         -2         123.32        123.33
+//	123.321         -1         123.3         123.4
+//	123.321          0         123           124
+//	123.321          1         120           130
+//	123.321          2         100           200
+//	123.321          3         0             1000
+//	123.321          4         0             10000
 func (t *Snum) GroupDown(step int) {
 	lenDecimal := t.decimal.Scale()
 	lenInteger := t.decimal.Precision() - lenDecimal
