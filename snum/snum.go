@@ -8,7 +8,7 @@ type SnumConst interface {
 	*Snum | int | int32 | int64 | uint | uint32 | uint64 | string
 }
 
-func NewSnum[T SnumConst](num T) *Snum {
+func New[T SnumConst](num T) *Snum {
 	snum := &Snum{}
 	snum.Init()
 
@@ -66,7 +66,7 @@ func (t *Snum) Init() {
 }
 
 func (t *Snum) Copy() *Snum {
-	ret := NewSnum(0)
+	ret := New(0)
 	ret.decimal.Copy(t.decimal)
 	return ret
 }

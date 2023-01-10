@@ -5,21 +5,21 @@ import (
 )
 
 func (t *Snum) IsZero() bool {
-	if t.Cmp(NewSnum(0)) != 0 {
+	if t.Cmp(New(0)) != 0 {
 		return false
 	}
 	return true
 }
 
 func (t *Snum) IsZeroUnder() bool {
-	if t.Cmp(NewSnum(0)) < 0 {
+	if t.Cmp(New(0)) < 0 {
 		return false
 	}
 	return true
 }
 
 func (t *Snum) IsZeroOver() bool {
-	if t.Cmp(NewSnum(0)) > 0 {
+	if t.Cmp(New(0)) > 0 {
 		return false
 	}
 	return true

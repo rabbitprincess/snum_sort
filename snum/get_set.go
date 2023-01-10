@@ -118,7 +118,7 @@ func (t *Snum) TrimDigit(lenInteger, lenDecimal int) error {
 	// 후처리 - 정수
 	if lenIntegerNow > lenInteger {
 		errInteger = fmt.Errorf("Integer limit exceeded | input : %d | limit : %d", lenIntegerNow, lenInteger) // 에러 처리
-		pt_snum := NewSnum(0)
+		pt_snum := New(0)
 
 		pt_snum.decimal.SetUint64(10)
 		pt_snum.Pow(int64(lenInteger))

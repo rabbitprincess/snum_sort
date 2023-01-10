@@ -16,7 +16,7 @@ import (
 // string -> bigint -> binary -> bigint -> string
 func TestSort_encode_decode(t *testing.T) {
 	fn := func(input string) {
-		numSort := NewSnumSort(input)
+		numSort := New(input)
 
 		enc := numSort.Encode()
 		err := numSort.Decode(enc)
@@ -186,7 +186,7 @@ func Test_sort(t *testing.T) {
 	sorts := make([]*Input, 0, 100)
 
 	input := func(snum string) {
-		sorted := NewSnumSort(snum)
+		sorted := New(snum)
 		bt := sorted.Encode()
 
 		data := &Input{snum: snum, encode: bt}
@@ -277,13 +277,13 @@ func TestSort_header(t *testing.T) {
 
 func TestSort_json(t *testing.T) {
 	fn_test := func(sn string) {
-		snumSort := NewSnumSort(snum.NewSnum(sn))
+		snumSort := New(snum.New(sn))
 
 		enc, err := json.MarshalIndent(&snumSort, "", "\t")
 		fmt.Println(sn, string(enc))
 		require.NoError(t, err)
 
-		snumSortNew := NewSnumSort(snum.NewSnum(0))
+		snumSortNew := New(snum.New(0))
 		err = json.Unmarshal(enc, &snumSortNew)
 		require.NoError(t, err)
 

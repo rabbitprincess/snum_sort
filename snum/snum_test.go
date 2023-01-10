@@ -7,22 +7,22 @@ import (
 
 func Test_snum(t *testing.T) {
 	{
-		snum := NewSnum(0)
+		snum := New(0)
 		fmt.Println(snum)
 	}
 	{
 		var num int = -1
-		snum := NewSnum(num)
+		snum := New(num)
 		fmt.Println(snum.String())
 	}
 	{
 		str := "1.2345"
-		snum := NewSnum(str)
+		snum := New(str)
 		fmt.Println(snum.String())
 	}
 	{
-		snum := NewSnum(1)
-		snum2 := NewSnum(snum)
+		snum := New(1)
+		snum2 := New(snum)
 		fmt.Println(snum2.String())
 	}
 }

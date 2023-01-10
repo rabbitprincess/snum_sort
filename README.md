@@ -5,6 +5,37 @@
  - Supports up to 96 integers and 32 decimal places
  - implement ericlagergren/decimal ( github.com/ericlagergren/decimal )
 
+
+## Quick Start
+
+```go
+
+package main
+
+import (
+	"fmt"
+
+	"github.com/gokch/snum_sort/snum"
+	"github.com/gokch/snum_sort/sort"
+)
+
+func main() {
+	sn1 := snum.New("123456789.987654321")
+	fmt.Println("snum :", sn1)
+
+	st1 := sort.New(sn1)
+	fmt.Println("sort :", st1)
+
+	enc, _ := st1.MarshalJSON()
+	fmt.Println("json :", enc)
+
+	st1New := sort.New(0)
+	st1New.UnmarshalJSON(enc)
+	fmt.Println("new :", st1New)
+}
+
+```
+
 # max length
  - positive : 65 byte (header 1 bt + body 64 bt)
  - negative : 66 byte (header 1 bt + body 64 bt + 0xFF 1 bt)

@@ -8,9 +8,9 @@ import (
 	"github.com/gokch/snum_sort/snum"
 )
 
-func NewSnumSort[T snum.SnumConst](num T) *SnumSort {
+func New[T snum.SnumConst](num T) *SnumSort {
 	return &SnumSort{
-		Snum: *snum.NewSnum(num),
+		Snum: *snum.New(num),
 	}
 }
 
