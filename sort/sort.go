@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"github.com/gokch/snum_sort/snum"
+	"github.com/rabbitprincess/snum_sort/snum"
 )
 
 func New[T snum.SnumConst](num T) *SnumSort {
