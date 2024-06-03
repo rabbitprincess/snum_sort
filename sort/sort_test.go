@@ -14,7 +14,7 @@ import (
 
 // Byte_encode, Byte_decode
 // string -> bigint -> binary -> bigint -> string
-func TestSort_encode_decode(t *testing.T) {
+func TestSortEncode(t *testing.T) {
 	fn := func(input string) {
 		numSort := New(input)
 

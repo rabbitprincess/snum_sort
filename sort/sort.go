@@ -8,7 +8,7 @@ import (
 	"github.com/rabbitprincess/snum_sort/snum"
 )
 
-func New[T snum.SnumConst](num T) *SnumSort {
+func New[T snum.ISnum](num T) *SnumSort {
 	return &SnumSort{
 		Snum: *snum.New(num),
 	}

@@ -4,11 +4,11 @@ import (
 	"github.com/ericlagergren/decimal"
 )
 
-type SnumConst interface {
+type ISnum interface {
 	*Snum | int | int32 | int64 | uint | uint32 | uint64 | string
 }
 
-func New[T SnumConst](num T) *Snum {
+func New[T ISnum](num T) *Snum {
 	snum := &Snum{}
 	snum.Init()
 

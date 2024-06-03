@@ -1,10 +1,10 @@
 module github.com/rabbitprincess/snum_sort
 
-go 1.19
+go 1.22.1
 
 require (
-	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73
-	github.com/stretchr/testify v1.8.1
+	github.com/ericlagergren/decimal v0.0.0-20240411145413-00de7ca16731
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
